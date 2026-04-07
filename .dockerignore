@@ -1,0 +1,7 @@
+.git
+.idea
+.vscode
+out
+target
+.m2
+PR.md

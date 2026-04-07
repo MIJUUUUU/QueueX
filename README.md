@@ -83,21 +83,47 @@ QueueX는 이를 해결하기 위해
 
 ## 프로젝트 구조
 
-- `src/` : Java 소스 코드
-- `lib/` : 외부 라이브러리
-- `schema.sql` : DB 스키마
-- `seed.sql` : 테스트용 초기 데이터
+- `src/main/java/` : Java 소스 코드
+- `src/main/java/app/Main.java` : 애플리케이션 엔트리포인트
+- `docker/mysql/init/` : Docker MySQL 초기화 SQL
+- `pom.xml` : Maven 빌드 설정
+- `Dockerfile` : 앱 Docker 빌드 설정
+- `docker-compose.yml` : 앱 + MySQL Docker Compose 설정
 
 ## 빌드 및 실행
 
-컴파일:
+로컬 Maven 빌드:
 
 ```bash
-javac -cp lib/mysql-connector-j-9.6.0.jar -d out $(find src -name "*.java")
+mvn clean package
 ```
 
-DB 연결 테스트 실행:
+JAR 실행:
 
 ```bash
-java -cp "out:lib/mysql-connector-j-9.6.0.jar" common.TestDB
+java -jar target/queuex-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
+
+## Docker 실행
+
+앱과 DB를 한 번에 실행:
+
+```bash
+docker compose up --build -d
+```
+
+초기 스키마와 테스트 데이터는 `docker/mysql/init/` 아래 SQL 파일이 자동 실행됩니다.
+
+앱 로그 확인:
+
+```bash
+docker compose logs -f app
+```
+
+DB 로그 확인:
+
+```bash
+docker compose logs -f mysql
+```
+
+현재 `app` 컨테이너는 [`Main.java`](/Users/miju/QueueX/src/main/java/app/Main.java) 실행 후 종료될 수 있습니다. 장시간 실행되는 서버 기능을 붙이면 계속 살아 있게 됩니다.

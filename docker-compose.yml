@@ -1,0 +1,32 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: queuex-mysql
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_DATABASE: queuex
+      MYSQL_ROOT_PASSWORD: 11111111
+      TZ: Asia/Seoul
+    volumes:
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p11111111"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: queuex-app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      QUEUEX_DB_URL: jdbc:mysql://mysql:3306/queuex?serverTimezone=Asia/Seoul
+      QUEUEX_DB_USER: root
+      QUEUEX_DB_PASSWORD: 11111111
+    restart: "no"
