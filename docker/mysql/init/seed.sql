@@ -14,9 +14,9 @@ ALTER TABLE admin AUTO_INCREMENT = 1;
 
 INSERT INTO admin (admin_auth_code)
 VALUES
-('ADMIN001'),
-('ADMIN002'),
-('ADMIN003');
+('89b933c62993dd19e05ae115f18c12491e28b67834079aff0a79c94e4472be1b'),
+('882277663e03e23ed876fa788cbbafd6397bf41340d01f529e8d3c43ce3040bf'),
+('b150642d01e39188c0d00adcf3e0ef451e6fc628e3fd48a426d41686e55cc6bd');
 
 INSERT INTO store (admin_id, store_name, category)
 VALUES
