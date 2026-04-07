@@ -8,8 +8,7 @@ CREATE TABLE IF NOT EXISTS customer (
 # 관리자 테이블
 CREATE TABLE IF NOT EXISTS admin (
     admin_id INT PRIMARY KEY AUTO_INCREMENT,
-    admin_code VARCHAR(255) NOT NULL UNIQUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    admin_auto_code VARCHAR(255) NOT NULL UNIQUE,
 );
 
 # 매장 테이블

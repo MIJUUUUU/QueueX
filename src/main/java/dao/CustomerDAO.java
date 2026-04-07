@@ -16,7 +16,7 @@ public class CustomerDAO {
         String sql = "SELECT customer_id, phone, password FROM customer WHERE phone = ?";
 
         try (Connection conn = DBUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, phone);
 
@@ -40,7 +40,7 @@ public class CustomerDAO {
         String sql = "INSERT INTO customer (phone, password) VALUES (?, ?)";
 
         try (Connection conn = DBUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, phone);
             pstmt.setString(2, password);
