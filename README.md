@@ -80,3 +80,24 @@ QueueX는 이를 해결하기 위해
 - `order_item` : 선주문 정보
 
 ---
+
+## 프로젝트 구조
+
+- `src/` : Java 소스 코드
+- `lib/` : 외부 라이브러리
+- `schema.sql` : DB 스키마
+- `seed.sql` : 테스트용 초기 데이터
+
+## 빌드 및 실행
+
+컴파일:
+
+```bash
+javac -cp lib/mysql-connector-j-9.6.0.jar -d out $(find src -name "*.java")
+```
+
+DB 연결 테스트 실행:
+
+```bash
+java -cp "out:lib/mysql-connector-j-9.6.0.jar" common.TestDB
+```

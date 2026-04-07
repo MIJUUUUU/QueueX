@@ -1,6 +1,6 @@
 package common;
 
-public class WatingStatus {
+public class WaitingStatus {
     public static final String WAITING = "WAITING";
     public static final String CALLED = "CALLED";
     public static final String ENTERED = "ENTERED";
