@@ -1,4 +1,4 @@
-package src.main.java.dto;
+package dto;
 
 public class Store {
     
