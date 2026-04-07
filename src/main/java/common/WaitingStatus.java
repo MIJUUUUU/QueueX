@@ -1,4 +1,4 @@
-package common;
+package src.main.java.common;
 
 public class WaitingStatus {
     public static final String WAITING = "WAITING";
