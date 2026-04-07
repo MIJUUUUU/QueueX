@@ -15,15 +15,15 @@ public class AdminUI {
     if (admin == null) {
       return;
     }
-
-    showAdminMenu();
+    AdminMenuUI adminMenuUI = new AdminMenuUI();
+    adminMenuUI.showAdminMenu(admin);
   }
 
   private Admin login() {
     int failCount = 0;
 
     while (failCount < 3) {
-      System.out.print("관리자 id를 입력해주세요 >> ");
+      System.out.print("관리자 인증번호를 입력해주세요 >> ");
       String inputCode = s.nextLine().trim();
 
       Admin admin = adminService.adminLogin(inputCode);
@@ -40,7 +40,7 @@ public class AdminUI {
         return null;
       }
 
-      System.out.println("id가 올바르지 않습니다.");
+      System.out.println("인증번호가 올바르지 않습니다.");
       System.out.println("현재 실패 횟수: " + failCount + "회");
       System.out.println("인증 3회 실패시 프로그램이 종료됩니다.");
     }
@@ -48,32 +48,4 @@ public class AdminUI {
     return null;
   }
 
-  private void showAdminMenu() {
-    while (true) {
-      System.out.println("""
-          [관리자 메뉴]
-          1. 가게 선택 및 운영
-          2  통계 조회
-          0. 시스템 종료
-          -------------------------
-          선택 >>
-          """);
-
-      String input = s.nextLine();
-
-      switch (input) {
-        case "1":
-          System.out.println("가게 선택 및 운영을 선택하셨습니다.");
-          break;
-        case "2":
-          System.out.println("통계 조회를 선택하셨습니다.");
-          break;
-        case "0":
-          System.out.println("시스템이 종료됩니다.");
-          return;
-        default:
-          System.out.println("잘못된 입력입니다. 다시 선택해주세요");
-      }
-    }
-  }
 }
