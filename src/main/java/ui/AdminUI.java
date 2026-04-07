@@ -23,10 +23,10 @@ public class AdminUI {
     int failCount = 0;
 
     while (failCount < 3) {
-      System.out.println("관리자 id를 입력해주세요 >> ");
-      String input = s.nextLine();
+      System.out.print("관리자 id를 입력해주세요 >> ");
+      String inputCode = s.nextLine().trim();
 
-      Admin admin = adminService.adminLogin(input);
+      Admin admin = adminService.adminLogin(inputCode);
 
       if (admin != null) {
         System.out.println("로그인에 성공했습니다.");
@@ -40,9 +40,9 @@ public class AdminUI {
         return null;
       }
 
-      System.out.println("id를 " + failCount + "회 틀렸습니다.");
-      System.out.println("3회 실패시 프로그램이 종료됩니다.");
-
+      System.out.println("id가 올바르지 않습니다.");
+      System.out.println("현재 실패 횟수: " + failCount + "회");
+      System.out.println("인증 3회 실패시 프로그램이 종료됩니다.");
     }
 
     return null;
