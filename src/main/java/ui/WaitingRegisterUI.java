@@ -59,8 +59,13 @@ public class WaitingRegisterUI {
             while (true) {
                 System.out.print("입력: ");
                 String line = scanner.nextLine().trim();
-                if (line.equals("0")) break;
-
+               if (line.equals("0")) {
+        if (selectedMenus.isEmpty()) {                          // ← 추가
+            System.out.println("메뉴를 1개 이상 선택해야 합니다.");  // ← 추가
+            continue;                                           // ← 추가
+        }                                                       // ← 추가
+        break;
+    }
                 String[] parts = line.split("\\s+");
                 if (parts.length != 2) {
                     System.out.println("형식이 올바르지 않습니다. 예) 1 2");
