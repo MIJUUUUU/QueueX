@@ -1,18 +1,28 @@
 package service;
 
+import common.PasswordUtil;
+import common.ValidationUtil;
 import dao.AdminDAO;
 import dto.Admin;
 
+import java.util.List;
+
 public class AdminService {
-  // 로그인, 호출, 입장, 노쇼, 통계 같은 업무 처리
-  AdminDAO adminDAO = new AdminDAO();
+  private final AdminDAO adminDAO = new AdminDAO();
 
-
-  public Admin adminLogin(String adminAuthCode) {
-    if (adminAuthCode == null || adminAuthCode.trim().isEmpty()) {
+  public Admin adminLogin(String rawAdminCode) {
+    if (ValidationUtil.isBlank(rawAdminCode)) {
       return null;
     }
-    return adminDAO.findAdmin(adminAuthCode.trim());
 
+    List<Admin> admins = adminDAO.findAllAdmins();
+
+    for (Admin admin : admins) {
+      if (PasswordUtil.matches(rawAdminCode.trim(), admin.getAdminAuthCode())) {
+        return admin;
+      }
+    }
+
+    return null;
   }
 }
