@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS customer (
 CREATE TABLE IF NOT EXISTS admin (
     admin_id INT PRIMARY KEY AUTO_INCREMENT,
     admin_code VARCHAR(255) NOT NULL UNIQUE,
-    admin_name VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -62,4 +61,3 @@ CREATE INDEX idx_waiting_customer_id ON waiting(customer_id);
 CREATE INDEX idx_waiting_store_id ON waiting(store_id);
 CREATE INDEX idx_waiting_status ON waiting(status);
 CREATE INDEX idx_order_item_waiting_id ON order_item(waiting_id);
-
