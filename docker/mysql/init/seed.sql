@@ -12,7 +12,7 @@ ALTER TABLE store AUTO_INCREMENT = 1;
 ALTER TABLE customer AUTO_INCREMENT = 1;
 ALTER TABLE admin AUTO_INCREMENT = 1;
 
-INSERT INTO admin (admin_code)
+INSERT INTO admin (admin_auth_code)
 VALUES
 ('ADMIN001'),
 ('ADMIN002'),
