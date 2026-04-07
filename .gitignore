@@ -4,5 +4,4 @@ bin/
 build/
 target/
 .m2/
-.idea/
 .vscode/
