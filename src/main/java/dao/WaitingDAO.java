@@ -125,12 +125,12 @@ public class WaitingDAO {
         return false;
     }
 
-    // 고객의 현재 WAITING 상태 대기 조회
+    // 고객의 현재 WAITING/CALLED 상태 대기 조회
 public List<Waiting> findWaitingByCustomerId(int customerId) {
     String sql = """
         SELECT waiting_id, customer_id, store_id, waiting_number, people_count, status, called_at, created_at
         FROM waiting
-        WHERE customer_id = ? AND status = 'WAITING'
+        WHERE customer_id = ? AND status IN ('WAITING', 'CALLED')
         ORDER BY created_at ASC
         """;
 

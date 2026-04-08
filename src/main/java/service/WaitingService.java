@@ -21,7 +21,10 @@ public class WaitingService {
 
     public List<Store> getAllStores() {
         return storeDAO.getAllStores();
-        
+    }
+
+    public Store getStoreById(int storeId) {
+        return storeDAO.findById(storeId);
     }
 
     public List<Menu> getMenusByStoreId(int storeId) {
@@ -63,6 +66,10 @@ public class WaitingService {
     // 고객의 현재 대기 목록 조회
     public List<Waiting> getWaitingByCustomerId(int customerId) {
     return waitingDAO.findWaitingByCustomerId(customerId);
+    }
+
+    public List<String> getOrderSummariesByWaitingId(int waitingId) {
+        return orderItemDAO.findOrderSummariesByWaitingId(waitingId);
     }
 
     // 대기 취소
