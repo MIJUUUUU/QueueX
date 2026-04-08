@@ -180,4 +180,31 @@ public boolean cancelWaiting(int waitingId, int customerId) {
     return false;
 }
 
+public int findCurrentPosition(int storeId, int waitingNumber) {
+    String sql = """
+        SELECT COUNT(*) + 1
+        FROM waiting
+        WHERE store_id = ?
+          AND status IN ('WAITING', 'CALLED')
+          AND waiting_number < ?
+        """;
+
+    try (Connection conn = DBUtil.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setInt(1, storeId);
+        pstmt.setInt(2, waitingNumber);
+
+        try (ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return waitingNumber;
+}
+
 }
