@@ -5,6 +5,8 @@ import service.CustomerService;
 
 import java.util.Scanner;
 
+import common.PhoneNumberUtil;
+
 public class LoginUI {
 
     private final Scanner scanner;
@@ -17,8 +19,13 @@ public class LoginUI {
 
     public Customer handle() {
         System.out.println("=== QueueX에 오신 것을 환영합니다 ===");
-        System.out.print("전화번호를 입력하세요: ");
-        String phone = scanner.nextLine().trim();
+       System.out.print("전화번호를 입력하세요: ");
+String phone = scanner.nextLine().trim();
+if (!PhoneNumberUtil.isValid(phone)) {
+    System.out.println("올바른 전화번호 형식이 아닙니다. (예: 01012345678)");
+    return null;
+}
+phone = PhoneNumberUtil.normalize(phone); 
 
         // 신규 고객 분기
         if (!customerService.isRegistered(phone)) {
