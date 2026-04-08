@@ -38,6 +38,16 @@ public class WaitingService {
         return waitingDAO.updateWaitingStatus(waitingId, WaitingStatus.CALLED);
     }
 
+    // 입장 처리
+    public boolean enterWaiting(int waitingId) {
+        return waitingDAO.updateWaitingStatus(waitingId, WaitingStatus.ENTERED);
+    }
+
+    // 노쇼 처리
+    public boolean noshowWaiting(int waitingId) {
+        return waitingDAO.updateWaitingStatus(waitingId, WaitingStatus.NOSHOW);
+    }
+
     // 대기 등록 + 선주문 항목 등록
     // selectedMenus: key=menuId, value=quantity
     public Waiting registerWaiting(int customerId, int storeId, int peopleCount, Map<Integer, Integer> selectedMenus) {
