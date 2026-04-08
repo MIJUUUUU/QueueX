@@ -1,5 +1,6 @@
 package ui;
 
+import common.ValidationUtil;
 import dto.Customer;
 import dto.Menu;
 import dto.Store;
@@ -35,13 +36,24 @@ public class WaitingRegisterUI {
         }
         System.out.println("0. 취소");
         System.out.print("가게를 선택하세요: ");
-        int storeIndex = parseInput(scanner.nextLine().trim()) - 1;
+        String storeInput = scanner.nextLine().trim();
 
-        if (storeIndex == -1) return;
-        if (storeIndex < 0 || storeIndex >= stores.size()) {
+        if ("0".equals(storeInput)) {
+            return;
+        }
+
+        if (!ValidationUtil.isPositiveInteger(storeInput)) {
             System.out.println("올바른 번호를 입력하세요.");
             return;
         }
+
+        int selectedStoreNumber = Integer.parseInt(storeInput);
+        if (!ValidationUtil.isInRange(selectedStoreNumber, 1, stores.size())) {
+            System.out.println("올바른 번호를 입력하세요.");
+            return;
+        }
+
+        int storeIndex = selectedStoreNumber - 1;
         Store selectedStore = stores.get(storeIndex);
 
         // 2. 메뉴 목록 출력 및 선주문 선택
@@ -59,25 +71,34 @@ public class WaitingRegisterUI {
             while (true) {
                 System.out.print("입력: ");
                 String line = scanner.nextLine().trim();
-               if (line.equals("0")) {
-        if (selectedMenus.isEmpty()) {                          // ← 추가
-            System.out.println("메뉴를 1개 이상 선택해야 합니다.");  // ← 추가
-            continue;                                           // ← 추가
-        }                                                       // ← 추가
-        break;
-    }
+                if (line.equals("0")) {
+                    if (selectedMenus.isEmpty()) {
+                        System.out.println("메뉴를 1개 이상 선택해야 합니다.");
+                        continue;
+                    }
+                    break;
+                }
+
                 String[] parts = line.split("\\s+");
                 if (parts.length != 2) {
                     System.out.println("형식이 올바르지 않습니다. 예) 1 2");
                     continue;
                 }
-                int menuIndex = parseInput(parts[0]) - 1;
-                int quantity = parseInput(parts[1]);
 
-                if (menuIndex < 0 || menuIndex >= menus.size() || quantity <= 0) {
+                if (!ValidationUtil.isPositiveInteger(parts[0]) || !ValidationUtil.isPositiveInteger(parts[1])) {
                     System.out.println("올바른 번호를 입력하세요.");
                     continue;
                 }
+
+                int menuNumber = Integer.parseInt(parts[0]);
+                int quantity = Integer.parseInt(parts[1]);
+
+                if (!ValidationUtil.isInRange(menuNumber, 1, menus.size())) {
+                    System.out.println("올바른 번호를 입력하세요.");
+                    continue;
+                }
+
+                int menuIndex = menuNumber - 1;
                 Menu selected = menus.get(menuIndex);
                 selectedMenus.put(selected.getMenuId(), quantity);
                 System.out.println(selected.getMenuName() + " " + quantity + "개 추가됨.");
@@ -86,11 +107,13 @@ public class WaitingRegisterUI {
 
         // 3. 인원수 입력
         System.out.print("\n인원수를 입력하세요: ");
-        int peopleCount = parseInput(scanner.nextLine().trim());
-        if (peopleCount <= 0) {
+        String peopleInput = scanner.nextLine().trim();
+        if (!ValidationUtil.isPositiveInteger(peopleInput)) {
             System.out.println("올바른 인원수를 입력하세요.");
             return;
         }
+
+        int peopleCount = Integer.parseInt(peopleInput);
 
         // 4. 대기 등록
         Waiting waiting = waitingService.registerWaiting(
@@ -107,14 +130,6 @@ public class WaitingRegisterUI {
             System.out.println("인원수: " + waiting.getPeopleCount() + "명");
         } else {
             System.out.println("대기 등록에 실패했습니다. 다시 시도해주세요.");
-        }
-    }
-
-    private int parseInput(String input) {
-        try {
-            return Integer.parseInt(input);
-        } catch (NumberFormatException e) {
-            return -1;
         }
     }
 }
