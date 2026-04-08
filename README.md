@@ -218,13 +218,24 @@ java -jar target/queuex-1.0-SNAPSHOT-jar-with-dependencies.jar
 
 ## Docker 실행
 
-앱과 DB를 한 번에 실행:
+MySQL만 백그라운드로 실행:
 
 ```bash
-docker compose up --build -d
+docker compose up -d mysql
+```
+
+앱 실행:
+
+```bash
+docker compose run --rm app
 ```
 
 초기 스키마와 테스트 데이터는 `docker/mysql/init/` 아래 SQL 파일이 자동 실행됩니다.
+
+주의:
+- `app`은 웹 서버가 아니라 콘솔 입력형 프로그램입니다.
+- 따라서 `docker compose up -d app`처럼 상시 서비스로 띄우는 방식보다 `docker compose run --rm app`으로 실행하는 것이 맞습니다.
+- Docker Desktop에서 `app` 컨테이너가 종료 상태로 보일 수 있는데, 이는 입력 종료 후 정상적으로 끝난 상태입니다.
 
 앱 로그 확인:
 
@@ -238,4 +249,10 @@ DB 로그 확인:
 docker compose logs -f mysql
 ```
 
-현재 `app` 컨테이너는 [`Main.java`](/Users/miju/QueueX/src/main/java/app/Main.java) 실행 후 종료될 수 있습니다. 장시간 실행되는 서버 기능을 붙이면 계속 살아 있게 됩니다.
+DB를 초기화부터 다시 시작하려면:
+
+```bash
+docker compose down -v
+docker compose up -d mysql
+docker compose run --rm app
+```

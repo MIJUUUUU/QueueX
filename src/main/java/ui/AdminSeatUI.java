@@ -126,15 +126,16 @@ public class AdminSeatUI {
   private boolean handleEmptyWaiting() {
     while (true) {
       System.out.println("대기 손님이 없습니다.");
-      System.out.print("관리자 메뉴로 돌아가겠습니까? (Y : 돌아가기 / N : 종료) >> ");
+      System.out.print("관리자 메뉴로 돌아가시겠습니까? (Y : 돌아가기 / N : 좌석 운영 종료) >> ");
       String input = s.nextLine().trim().toUpperCase();
 
       if ("Y".equals(input)) {
+        System.out.println("관리자 메뉴로 돌아갑니다.");
         return true;
       }
 
       if ("N".equals(input)) {
-        System.out.println("프로그램을 종료합니다.");
+        System.out.println("좌석 운영을 종료합니다.");
         return false;
       }
 
