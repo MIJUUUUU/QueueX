@@ -20,6 +20,7 @@ public class WaitingService {
 
     public List<Store> getAllStores() {
         return storeDAO.getAllStores();
+        
     }
 
     public List<Menu> getMenusByStoreId(int storeId) {
