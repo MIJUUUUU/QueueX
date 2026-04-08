@@ -3,6 +3,7 @@ package service;
 import common.PasswordUtil;
 import dao.AdminDAO;
 import dto.Admin;
+import dto.AdminStatistics;
 import dto.Store;
 
 import java.util.Collections;
@@ -33,5 +34,13 @@ public class AdminService {
     }
 
     return adminDAO.findStoresByAdminId(admin.getAdminId());
+  }
+
+  public AdminStatistics getTodayStatistics(Store store) {
+    if (store == null) {
+      return new AdminStatistics(0, 0, 0, Collections.emptyList());
+    }
+
+    return adminDAO.getTodayStatisticsByStoreId(store.getStoreId());
   }
 }
