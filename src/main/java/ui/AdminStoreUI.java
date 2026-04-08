@@ -9,9 +9,14 @@ import java.util.List;
 import java.util.Scanner;
 
 public class AdminStoreUI {
-  private final Scanner s = new Scanner(System.in);
+  private final Scanner s;
   private final AdminService adminService = new AdminService();
-  private final AdminSeatUI adminSeatUI = new AdminSeatUI();
+  private final AdminSeatUI adminSeatUI;
+
+  public AdminStoreUI(Scanner scanner) {
+    this.s = scanner;
+    this.adminSeatUI = new AdminSeatUI(scanner);
+  }
 
   public void manageStore(Admin admin) { // 관리자 가게 목록 출력 및 선택
     List<Store> stores = adminService.getStoresByAdmin(admin);

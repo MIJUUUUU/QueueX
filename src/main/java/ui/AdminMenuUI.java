@@ -5,8 +5,13 @@ import dto.Admin;
 import java.util.Scanner;
 
 public class AdminMenuUI {
-  private final Scanner s = new Scanner(System.in);
-  private final AdminStoreUI adminStoreUI = new AdminStoreUI();
+  private final Scanner s;
+  private final AdminStoreUI adminStoreUI;
+
+  public AdminMenuUI(Scanner scanner) {
+    this.s = scanner;
+    this.adminStoreUI = new AdminStoreUI(scanner);
+  }
 
   public void showAdminMenu(Admin admin) {
     while (true) {
