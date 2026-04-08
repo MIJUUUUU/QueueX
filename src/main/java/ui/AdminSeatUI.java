@@ -10,9 +10,13 @@ import java.util.List;
 import java.util.Scanner;
 
 public class AdminSeatUI {
-  private final Scanner s = new Scanner(System.in);
+  private final Scanner s;
   private final WaitingService waitingService = new WaitingService();
   private final RecommendationService recommendationService = new RecommendationService();
+
+  public AdminSeatUI(Scanner scanner) {
+    this.s = scanner;
+  }
 
   // 좌석 운영 시스템 시작
   public void startSeatFlow(Store store) {
