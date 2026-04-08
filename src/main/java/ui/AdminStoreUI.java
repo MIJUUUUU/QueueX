@@ -11,8 +11,9 @@ import java.util.Scanner;
 public class AdminStoreUI {
   private final Scanner s = new Scanner(System.in);
   private final AdminService adminService = new AdminService();
+  private final AdminSeatUI adminSeatUI = new AdminSeatUI();
 
-  public void manageStore(Admin admin) {
+  public void manageStore(Admin admin) { // 관리자 가게 목록 출력 및 선택
     List<Store> stores = adminService.getStoresByAdmin(admin);
 
     if (stores.isEmpty()) {
@@ -48,8 +49,10 @@ public class AdminStoreUI {
         continue;
       }
 
+      // 선택한 가게 운영 화면으로 진입.
       Store selectedStore = stores.get(selected - 1);
       System.out.println(selectedStore.getStoreName() + " 관리자 메뉴로 진입합니다.");
+      adminSeatUI.startSeatFlow(selectedStore);
       return;
     }
   }
