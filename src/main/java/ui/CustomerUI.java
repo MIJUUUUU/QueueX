@@ -3,6 +3,10 @@ package ui;
 import common.PhoneNumberUtil;
 import dto.Customer;
 import service.CustomerService;
+import dto.Waiting;
+import service.WaitingService;
+import java.util.List;
+
 
 import java.util.Scanner;
 
@@ -11,6 +15,8 @@ public class CustomerUI {
     private final CustomerService customerService = new CustomerService();
     private final Scanner scanner;
     private final WaitingRegisterUI waitingRegisterUI;
+    private final WaitingService waitingService = new WaitingService();
+
 
     public CustomerUI(Scanner scanner) {
         this.scanner = scanner;
@@ -69,6 +75,25 @@ public class CustomerUI {
         return null;
     }
 
+
+    private void showMyWaiting(Customer customer) {
+    List<Waiting> waitingList = waitingService.getWaitingByCustomerId(customer.getCustomerId());
+
+    if (waitingList.isEmpty()) {
+        System.out.println("현재 등록된 대기가 없습니다.");
+        return;
+    }
+
+    System.out.println("\n=== 내 대기 현황 ===");
+    for (Waiting w : waitingList) {
+        System.out.println("대기 번호 : " + w.getWaitingNumber());
+        System.out.println("인원수   : " + w.getPeopleCount() + "명");
+        System.out.println("상태     : " + w.getStatus());
+        System.out.println("등록 시각 : " + w.getCreatedAt());
+        System.out.println("--------------------");
+    }
+}
+
     private void showMainMenu(Customer customer) {
         while (true) {
             System.out.println("""
@@ -86,9 +111,11 @@ public class CustomerUI {
                 case "1":
                     waitingRegisterUI.handle(customer);
                     break;
+                
                 case "2":
-                    System.out.println("내 대기 조회 기능은 추후 구현 예정입니다.");
-                    break;
+                      showMyWaiting(customer);
+                   break;
+
                 case "3":
                     System.out.println("고객 메뉴를 종료합니다.");
                     return;

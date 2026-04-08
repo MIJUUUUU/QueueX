@@ -124,4 +124,41 @@ public class WaitingDAO {
 
         return false;
     }
+
+    // 고객의 현재 WAITING 상태 대기 조회
+public List<Waiting> findWaitingByCustomerId(int customerId) {
+    String sql = """
+        SELECT waiting_id, customer_id, store_id, waiting_number, people_count, status, called_at, created_at
+        FROM waiting
+        WHERE customer_id = ? AND status = 'WAITING'
+        ORDER BY created_at ASC
+        """;
+
+    List<Waiting> waitingList = new ArrayList<>();
+
+    try (Connection conn = DBUtil.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setInt(1, customerId);
+
+        try (ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                waitingList.add(new Waiting(
+                    rs.getInt("waiting_id"),
+                    rs.getInt("customer_id"),
+                    rs.getInt("store_id"),
+                    rs.getInt("waiting_number"),
+                    rs.getInt("people_count"),
+                    rs.getString("status"),
+                    rs.getTimestamp("called_at") != null ? rs.getTimestamp("called_at").toLocalDateTime() : null,
+                    rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null
+                ));
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return waitingList;
+}
+
 }

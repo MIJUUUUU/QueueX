@@ -59,4 +59,10 @@ public class WaitingService {
         }
         return waiting;
     }
+
+    // 고객의 현재 대기 목록 조회
+    public List<Waiting> getWaitingByCustomerId(int customerId) {
+    return waitingDAO.findWaitingByCustomerId(customerId);
+    }
+
 }
