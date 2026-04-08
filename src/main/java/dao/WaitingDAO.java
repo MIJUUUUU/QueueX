@@ -103,7 +103,13 @@ public class WaitingDAO {
     }
     // 대기 상태 변경
     public boolean updateWaitingStatus(int waitingId, String status) {
-        String sql = "UPDATE waiting SET status = ?, called_at = NOW() WHERE waiting_id = ?";
+        String sql;
+
+        if (WaitingStatus.CALLED.equals(status)) {
+            sql = "UPDATE waiting SET status = ?, called_at = NOW() WHERE waiting_id = ?";
+        } else {
+            sql = "UPDATE waiting SET status = ? WHERE waiting_id = ?";
+        }
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
