@@ -10,13 +10,14 @@ public class CustomerUI {
     private final CustomerService customerService = new CustomerService();
     private final Scanner scanner = new Scanner(System.in);
 
-    public void start() {
+    public boolean start() {
         Customer customer = handleLoginOrRegister();
         if (customer == null) {
             System.out.println("비밀번호를 " + customerService.getMaxPasswordAttempts() + "회 이상 틀렸습니다. 프로그램을 종료합니다.");
-            return;
+            return false;
         }
         showMainMenu(customer);
+        return true;
     }
 
     private Customer handleLoginOrRegister() {
