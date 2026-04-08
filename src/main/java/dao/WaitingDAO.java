@@ -161,4 +161,23 @@ public List<Waiting> findWaitingByCustomerId(int customerId) {
     return waitingList;
 }
 
+// 고객 본인 대기 취소 (WAITING 상태만 취소 가능)
+public boolean cancelWaiting(int waitingId, int customerId) {
+    String sql = "UPDATE waiting SET status = ? WHERE waiting_id = ? AND customer_id = ? AND status = ?";
+
+    try (Connection conn = DBUtil.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setString(1, WaitingStatus.CANCELED);
+        pstmt.setInt(2, waitingId);
+        pstmt.setInt(3, customerId);
+        pstmt.setString(4, WaitingStatus.WAITING);
+
+        return pstmt.executeUpdate() > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
 }

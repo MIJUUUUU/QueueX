@@ -65,4 +65,9 @@ public class WaitingService {
     return waitingDAO.findWaitingByCustomerId(customerId);
     }
 
+    // 대기 취소
+    public boolean cancelWaiting(int waitingId, int customerId) {
+    return waitingDAO.cancelWaiting(waitingId, customerId);
+    }
+
 }
