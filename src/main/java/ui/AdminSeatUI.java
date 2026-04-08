@@ -10,13 +10,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class AdminSeatUI {
-  private final Scanner s;
+  private final Scanner s = new Scanner(System.in);
   private final WaitingService waitingService = new WaitingService();
   private final RecommendationService recommendationService = new RecommendationService();
-
-  public AdminSeatUI(Scanner scanner) {
-    this.s = scanner;
-  }
 
   // 좌석 운영 시스템 시작
   public void startSeatFlow(Store store) {
@@ -30,26 +26,29 @@ public class AdminSeatUI {
       }
 
       int seatCount = Integer.parseInt(input);
+      runSeatCycle(store, seatCount);
+      return;
+    }
+  }
 
-      // 현재 대기 목록 조회
+  // 추천 -> 호출 -> 입장/노쇼 처리를 반복
+  private void runSeatCycle(Store store, int seatCount) {
+    while (true) {
       List<Waiting> waitingList = waitingService.getWaitingByStoreId(store.getStoreId());
-      // 추천 순위 계산
       List<Waiting> recommendedList = recommendationService.recommend(waitingList, seatCount);
 
-      // 대기 손님 없을시 메시지 및 종료
       if (recommendedList.isEmpty()) {
-        System.out.println("추천 가능한 대기 손님이 없습니다.");
+        if (!handleEmptyWaiting()) {
+          return;
+        }
         return;
       }
 
-      // 추천 순위 출력
       System.out.println("===== 추천 순위 =====");
       for (Waiting waiting : recommendedList) {
         System.out.println("대기 " + waiting.getWaitingNumber() + "번 / " + waiting.getPeopleCount() + "명");
       }
 
-
-      // 가장 우선순위가 높은 대기 손님을 호출 대상으로 선택
       Waiting target = recommendedList.get(0);
 
       System.out.println();
@@ -57,6 +56,7 @@ public class AdminSeatUI {
       System.out.println("1. 호출");
       System.out.println("0. 취소");
       System.out.print("선택 >> ");
+
       String select = s.nextLine().trim();
 
       if ("0".equals(select)) {
@@ -76,16 +76,65 @@ public class AdminSeatUI {
       }
 
       System.out.println("호출 완료 !!");
-      showCalledWaiting(target);
-      return;
+
+      if (!handleCalledWaiting(target)) {
+        return;
+      }
     }
   }
 
-  // 현재 호출된 손님 정보 출력
-  private void showCalledWaiting(Waiting waiting) {
-    System.out.println("===== 현재 호출 =====");
-    System.out.println("대기 " + waiting.getWaitingNumber() + "번 / " + waiting.getPeopleCount() + "명");
-    System.out.println("1. 입장 처리");
-    System.out.println("2. 노쇼 처리");
+  // 현재 호출된 손님에 대해 입장/노쇼/뒤로가기 선택 처리
+  private boolean handleCalledWaiting(Waiting waiting) {
+    while (true) {
+      System.out.println("===== 현재 호출 =====");
+      System.out.println("대기 " + waiting.getWaitingNumber() + "번 / " + waiting.getPeopleCount() + "명");
+      System.out.println("1. 입장 처리");
+      System.out.println("2. 노쇼 처리");
+      System.out.println("0. 관리자 메뉴");
+      System.out.print("선택 >> ");
+
+      String input = s.nextLine().trim();
+
+      switch (input) {
+        case "1":
+          if (waitingService.enterWaiting(waiting.getWaitingId())) {
+            System.out.println("입장 처리 완료 !!");
+          } else {
+            System.out.println("입장 처리에 실패했습니다.");
+          }
+          return true;
+        case "2":
+          if (waitingService.noshowWaiting(waiting.getWaitingId())) {
+            System.out.println("노쇼 처리 완료 !!");
+          } else {
+            System.out.println("노쇼 처리에 실패했습니다.");
+          }
+          return true;
+        case "0":
+          return false;
+        default:
+          System.out.println("잘못된 입력입니다. 다시 시도해주세요.");
+      }
+    }
+  }
+
+  // 추천 가능한 대기 손님이 없을 때 처리
+  private boolean handleEmptyWaiting() {
+    while (true) {
+      System.out.println("대기 손님이 없습니다.");
+      System.out.print("관리자 메뉴로 돌아가겠습니까? (Y : 돌아가기 / N : 종료) >> ");
+      String input = s.nextLine().trim().toUpperCase();
+
+      if ("Y".equals(input)) {
+        return true;
+      }
+
+      if ("N".equals(input)) {
+        System.out.println("프로그램을 종료합니다.");
+        return false;
+      }
+
+      System.out.println("잘못된 입력입니다. 다시 입력해주세요.");
+    }
   }
 }
