@@ -1,5 +1,6 @@
 package service;
 
+import common.PasswordUtil;
 import common.PhoneNumberUtil;
 import dao.CustomerDAO;
 import dto.Customer;
@@ -19,11 +20,11 @@ public class CustomerService {
 
         // 전화번호 없음 → 신규 가입
         if (found == null) {
-            return customerDAO.register(phone, password);
+            return customerDAO.register(normalized, PasswordUtil.hashPassword(password));
         }
 
         // 비밀번호 일치 → 로그인 성공
-        if (found.getPassword().equals(password)) {
+        if (PasswordUtil.matches(password, found.getPassword())) {
             return found;
         }
 
