@@ -9,6 +9,7 @@ public class CustomerUI {
 
     private final CustomerService customerService = new CustomerService();
     private final Scanner scanner = new Scanner(System.in);
+    private final WaitingRegisterUI waitingRegisterUI = new WaitingRegisterUI(scanner);
 
     public boolean start() {
         Customer customer = handleLoginOrRegister();
@@ -45,7 +46,7 @@ public class CustomerUI {
 
             Customer customer = customerService.login(phone, password);
             if (customer != null) {
-                System.out.println("로그인 성공! 어서오세요.");
+                System.out.println("\n로그인 성공! 어서오세요.");
                 return customer;
             }
 
@@ -60,7 +61,31 @@ public class CustomerUI {
     }
 
     private void showMainMenu(Customer customer) {
-        // 로그인 후 고객 기능 메뉴 (추후 구현)
-        System.out.println("---- 고객 메뉴 ----");
+        while (true) {
+            System.out.println("""
+                
+                [고객 메뉴]
+                1. 가게 선택
+                2. 내 대기 조회
+                3. 종료
+                선택 >>
+                """);
+
+            String input = scanner.nextLine().trim();
+
+            switch (input) {
+                case "1":
+                    waitingRegisterUI.handle(customer);
+                    break;
+                case "2":
+                    System.out.println("내 대기 조회 기능은 추후 구현 예정입니다.");
+                    break;
+                case "3":
+                    System.out.println("고객 메뉴를 종료합니다.");
+                    return;
+                default:
+                    System.out.println("올바른 메뉴 번호를 입력해주세요.");
+            }
+        }
     }
 }
