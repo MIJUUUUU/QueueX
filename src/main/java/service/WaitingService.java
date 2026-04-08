@@ -1,5 +1,6 @@
 package service;
 
+import common.WaitingStatus;
 import dao.MenuDAO;
 import dao.OrderItemDAO;
 import dao.StoreDAO;
@@ -25,6 +26,16 @@ public class WaitingService {
 
     public List<Menu> getMenusByStoreId(int storeId) {
         return menuDAO.getMenusByStoreId(storeId);
+    }
+
+    // 해당 가게 현재 대기 목록 조회
+    public List<Waiting> getWaitingByStoreId(int storeId) {
+        return waitingDAO.findWaitingByStoreId(storeId);
+    }
+
+    // 대기 손님을 호출 상태로 변경
+    public boolean callWaiting(int waitingId) {
+        return waitingDAO.updateWaitingStatus(waitingId, WaitingStatus.CALLED);
     }
 
     // 대기 등록 + 선주문 항목 등록
