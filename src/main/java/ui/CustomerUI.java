@@ -93,6 +93,49 @@ public class CustomerUI {
         System.out.println("--------------------");
     }
 }
+private int parseInput(String input) {
+    try {
+        return Integer.parseInt(input);
+    } catch (NumberFormatException e) {
+        return -1;
+    }
+}
+
+private void cancelMyWaiting(Customer customer) {
+    List<Waiting> waitingList = waitingService.getWaitingByCustomerId(customer.getCustomerId());
+
+    if (waitingList.isEmpty()) {
+        System.out.println("취소할 대기가 없습니다.");
+        return;
+    }
+
+    System.out.println("\n=== 취소할 대기 선택 ===");
+    for (int i = 0; i < waitingList.size(); i++) {
+        Waiting w = waitingList.get(i);
+        System.out.println((i + 1) + ". 대기 번호: " + w.getWaitingNumber()
+            + " | 인원수: " + w.getPeopleCount() + "명"
+            + " | 등록 시각: " + w.getCreatedAt());
+    }
+    System.out.println("0. 취소 없이 돌아가기");
+    System.out.print("선택: ");
+
+    int index = parseInput(scanner.nextLine().trim()) - 1;
+    if (index == -1) return;
+    if (index < 0 || index >= waitingList.size()) {
+        System.out.println("올바른 번호를 입력하세요.");
+        return;
+    }
+
+    Waiting selected = waitingList.get(index);
+    boolean result = waitingService.cancelWaiting(selected.getWaitingId(), customer.getCustomerId());
+
+    if (result) {
+        System.out.println("대기 번호 " + selected.getWaitingNumber() + "번이 취소되었습니다.");
+    } else {
+        System.out.println("대기 취소에 실패했습니다. 다시 시도해주세요.");
+    }
+}
+
 
     private void showMainMenu(Customer customer) {
         while (true) {
@@ -101,7 +144,8 @@ public class CustomerUI {
                 [고객 메뉴]
                 1. 가게 선택
                 2. 내 대기 조회
-                3. 종료
+                3. 대기 등록 취소
+                4. 종료
                 선택 >>
                 """);
 
@@ -115,8 +159,12 @@ public class CustomerUI {
                 case "2":
                       showMyWaiting(customer);
                    break;
-
+                
                 case "3":
+                        cancelMyWaiting(customer);
+                    break;   
+
+                case "4":
                     System.out.println("고객 메뉴를 종료합니다.");
                     return;
                 default:
