@@ -29,4 +29,6 @@ services:
       QUEUEX_DB_URL: jdbc:mysql://mysql:3306/queuex?serverTimezone=Asia/Seoul
       QUEUEX_DB_USER: root
       QUEUEX_DB_PASSWORD: 11111111
+    stdin_open: true
+    tty: true
     restart: "no"
