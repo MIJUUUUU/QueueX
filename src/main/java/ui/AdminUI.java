@@ -6,8 +6,14 @@ import service.AdminService;
 import java.util.Scanner;
 
 public class AdminUI {
-  private Scanner s = new Scanner(System.in);
-  private AdminService adminService = new AdminService();
+  private final Scanner s;
+  private final AdminService adminService = new AdminService();
+  private final AdminMenuUI adminMenuUI;
+
+  public AdminUI(Scanner scanner) {
+    this.s = scanner;
+    this.adminMenuUI = new AdminMenuUI(scanner);
+  }
 
   public void adminStart() {
     Admin admin = login();
@@ -15,7 +21,6 @@ public class AdminUI {
     if (admin == null) {
       return;
     }
-    AdminMenuUI adminMenuUI = new AdminMenuUI();
     adminMenuUI.showAdminMenu(admin);
   }
 

@@ -20,8 +20,8 @@ public class Main {
         }
 
         Scanner scanner = new Scanner(System.in);
-        CustomerUI customerUI = new CustomerUI();
-        AdminUI adminUI = new AdminUI();
+        CustomerUI customerUI = new CustomerUI(scanner);
+        AdminUI adminUI = new AdminUI(scanner);
 
         while (true) {
             System.out.println("""

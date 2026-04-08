@@ -21,6 +21,7 @@ QueueX는 이를 해결하기 위해
 
 ### 👤 고객 기능
 - 전화번호 / 비밀번호 기반 로그인 및 회원가입
+- 비밀번호 해시 저장 및 해시 비교 로그인
 - 가게 선택
 - 메뉴 조회
 - 대기 등록
@@ -63,6 +64,10 @@ QueueX는 이를 해결하기 위해
 전화번호 입력 >>
 비밀번호 입력 >>
 ```
+
+- 고객 전화번호는 `PhoneNumberUtil.normalize()` 기준으로 숫자만 저장합니다.
+- 고객 비밀번호는 평문 저장이 아니라 해시값으로 저장합니다.
+- 로그인 시 입력한 평문 비밀번호를 해시 비교로 검증합니다.
 
 로그인 성공 후 고객 메뉴는 아래 흐름으로 진행됩니다.
 
@@ -141,6 +146,11 @@ QueueX는 이를 해결하기 위해
   - 예: `01012345678` → `010-1234-5678`
 - 전화번호 입력 검증은 `isValid()` 기준으로 처리합니다.
 
+### 인증값 처리 기준
+- 고객 비밀번호와 관리자 인증번호는 모두 해시값으로 저장합니다.
+- 로그인 시에는 사용자가 입력한 평문 값을 해시 비교로 검증합니다.
+- 공통 인증 비교는 `PasswordUtil` 기준으로 처리합니다.
+
 ## 🧠 핵심 로직
 
 ### 📌 인원수 기반 고객 추천
@@ -171,14 +181,28 @@ QueueX는 이를 해결하기 위해
 
 - `src/main/java/` : Java 소스 코드
 - `src/main/java/app/Main.java` : 애플리케이션 엔트리포인트
+- `src/main/java/common/` : 공통 유틸 클래스
+- `src/main/java/ui/` : 콘솔 UI 계층
 - `docker/mysql/init/` : Docker MySQL 초기화 SQL
 - `pom.xml` : Maven 빌드 설정
 - `Dockerfile` : 앱 Docker 빌드 설정
 - `docker-compose.yml` : 앱 + MySQL Docker Compose 설정
 
+## 공통 구조 규칙
+
+- 콘솔 입력은 `Main`에서 `Scanner(System.in)`를 하나만 생성하고 각 UI에 전달하여 공유합니다.
+- 입력 검증은 `ValidationUtil` 기준으로 처리합니다.
+- 전화번호는 `PhoneNumberUtil`, 인증값 비교는 `PasswordUtil`을 공통으로 사용합니다.
+
 ## 빌드 및 실행
 
-로컬 Maven 빌드:
+로컬 Maven 컴파일:
+
+```bash
+mvn compile
+```
+
+패키징:
 
 ```bash
 mvn clean package
@@ -189,6 +213,8 @@ JAR 실행:
 ```bash
 java -jar target/queuex-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
+
+직접 `javac`를 출력 경로 없이 실행하면 `.class` 파일이 소스 폴더 옆에 생성될 수 있으므로, 기본적으로 Maven 명령(`mvn compile`, `mvn package`)을 사용합니다.
 
 ## Docker 실행
 

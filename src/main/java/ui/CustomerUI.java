@@ -8,8 +8,13 @@ import java.util.Scanner;
 public class CustomerUI {
 
     private final CustomerService customerService = new CustomerService();
-    private final Scanner scanner = new Scanner(System.in);
-    private final WaitingRegisterUI waitingRegisterUI = new WaitingRegisterUI(scanner);
+    private final Scanner scanner;
+    private final WaitingRegisterUI waitingRegisterUI;
+
+    public CustomerUI(Scanner scanner) {
+        this.scanner = scanner;
+        this.waitingRegisterUI = new WaitingRegisterUI(scanner);
+    }
 
     public boolean start() {
         Customer customer = handleLoginOrRegister();
