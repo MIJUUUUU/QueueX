@@ -7,10 +7,12 @@ import java.util.Scanner;
 public class AdminMenuUI {
   private final Scanner s;
   private final AdminStoreUI adminStoreUI;
+  private final AdminStatsUI adminStatsUI;
 
   public AdminMenuUI(Scanner scanner) {
     this.s = scanner;
     this.adminStoreUI = new AdminStoreUI(scanner);
+    this.adminStatsUI = new AdminStatsUI(scanner);
   }
 
   public void showAdminMenu(Admin admin) {
@@ -33,7 +35,7 @@ public class AdminMenuUI {
           adminStoreUI.manageStore(admin);
           break;
         case "2":
-          System.out.println("통계 조회를 선택하셨습니다.");
+          adminStatsUI.showStatistics(admin);
           break;
         case "0":
           System.out.println("로그아웃합니다.");
