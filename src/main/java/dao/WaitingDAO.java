@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WaitingDAO {
 
@@ -62,5 +64,58 @@ public class WaitingDAO {
             e.printStackTrace();
         }
         return null;
+    }
+    // 해당 가게 현재 WAITING 상태 손님 조회
+    public List<Waiting> findWaitingByStoreId(int storeId) {
+        String sql = """
+        SELECT waiting_id, customer_id, store_id, waiting_number, people_count, status, called_at, created_at
+        FROM waiting
+        WHERE store_id = ? AND status = 'WAITING'
+        ORDER BY waiting_number ASC
+        """;
+
+        List<Waiting> waitingList = new ArrayList<>();
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, storeId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    waitingList.add(new Waiting(
+                        rs.getInt("waiting_id"),
+                        rs.getInt("customer_id"),
+                        rs.getInt("store_id"),
+                        rs.getInt("waiting_number"),
+                        rs.getInt("people_count"),
+                        rs.getString("status"),
+                        rs.getTimestamp("called_at") != null ? rs.getTimestamp("called_at").toLocalDateTime() : null,
+                        rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return waitingList;
+    }
+    // 대기 상태 변경
+    public boolean updateWaitingStatus(int waitingId, String status) {
+        String sql = "UPDATE waiting SET status = ?, called_at = NOW() WHERE waiting_id = ?";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, status);
+            pstmt.setInt(2, waitingId);
+
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }
