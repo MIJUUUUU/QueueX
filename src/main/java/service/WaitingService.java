@@ -72,6 +72,10 @@ public class WaitingService {
         return orderItemDAO.findOrderSummariesByWaitingId(waitingId);
     }
 
+    public int getCurrentPosition(int storeId, int waitingNumber) {
+        return waitingDAO.findCurrentPosition(storeId, waitingNumber);
+    }
+
     // 대기 취소
     public boolean cancelWaiting(int waitingId, int customerId) {
     return waitingDAO.cancelWaiting(waitingId, customerId);

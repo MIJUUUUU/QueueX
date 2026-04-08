@@ -97,9 +97,11 @@ public class CustomerUI {
         Store store = waitingService.getStoreById(w.getStoreId());
         String storeName = store != null ? store.getStoreName() : "알 수 없음";
         List<String> orderSummaries = waitingService.getOrderSummariesByWaitingId(w.getWaitingId());
+        int currentPosition = waitingService.getCurrentPosition(w.getStoreId(), w.getWaitingNumber());
 
         System.out.println("가게명   : " + storeName);
         System.out.println("대기 번호 : " + w.getWaitingNumber());
+        System.out.println("내 순서  : " + currentPosition + "번째");
         System.out.println("인원수   : " + w.getPeopleCount() + "명");
         System.out.println("상태     : " + w.getStatus());
         System.out.println("등록 시각 : " + w.getCreatedAt());
