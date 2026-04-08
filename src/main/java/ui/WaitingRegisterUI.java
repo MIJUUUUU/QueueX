@@ -128,6 +128,25 @@ public class WaitingRegisterUI {
             System.out.println("가게: " + selectedStore.getStoreName());
             System.out.println("대기 번호: " + waiting.getWaitingNumber());
             System.out.println("인원수: " + waiting.getPeopleCount() + "명");
+            System.out.println("주문내역:");
+
+            if (selectedMenus.isEmpty()) {
+                System.out.println("- 없음");
+            } else {
+                for (Map.Entry<Integer, Integer> entry : selectedMenus.entrySet()) {
+                    Menu orderedMenu = null;
+
+                    for (Menu menu : menus) {
+                        if (menu.getMenuId() == entry.getKey()) {
+                            orderedMenu = menu;
+                            break;
+                        }
+                    }
+
+                    String menuName = orderedMenu != null ? orderedMenu.getMenuName() : "알 수 없는 메뉴";
+                    System.out.println("- " + menuName + " " + entry.getValue() + "개");
+                }
+            }
         } else {
             System.out.println("대기 등록에 실패했습니다. 다시 시도해주세요.");
         }
