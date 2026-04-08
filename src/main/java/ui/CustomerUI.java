@@ -1,6 +1,7 @@
 package ui;
 
 import common.PhoneNumberUtil;
+import common.ValidationUtil;
 import dto.Customer;
 import service.CustomerService;
 import dto.Waiting;
@@ -93,13 +94,6 @@ public class CustomerUI {
         System.out.println("--------------------");
     }
 }
-private int parseInput(String input) {
-    try {
-        return Integer.parseInt(input);
-    } catch (NumberFormatException e) {
-        return -1;
-    }
-}
 
 private void cancelMyWaiting(Customer customer) {
     List<Waiting> waitingList = waitingService.getWaitingByCustomerId(customer.getCustomerId());
@@ -119,13 +113,23 @@ private void cancelMyWaiting(Customer customer) {
     System.out.println("0. 취소 없이 돌아가기");
     System.out.print("선택: ");
 
-    int index = parseInput(scanner.nextLine().trim()) - 1;
-    if (index == -1) return;
-    if (index < 0 || index >= waitingList.size()) {
+    String input = scanner.nextLine().trim();
+    if ("0".equals(input)) {
+        return;
+    }
+
+    if (!ValidationUtil.isPositiveInteger(input)) {
         System.out.println("올바른 번호를 입력하세요.");
         return;
     }
 
+    int selectedNumber = Integer.parseInt(input);
+    if (!ValidationUtil.isInRange(selectedNumber, 1, waitingList.size())) {
+        System.out.println("올바른 번호를 입력하세요.");
+        return;
+    }
+
+    int index = selectedNumber - 1;
     Waiting selected = waitingList.get(index);
     boolean result = waitingService.cancelWaiting(selected.getWaitingId(), customer.getCustomerId());
 
