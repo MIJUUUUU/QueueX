@@ -34,4 +34,29 @@ public class StoreDAO {
         }
         return stores;
     }
+
+    public Store findById(int storeId) {
+        String sql = "SELECT store_id, admin_id, store_name, category FROM store WHERE store_id = ?";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, storeId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Store(
+                        rs.getInt("store_id"),
+                        rs.getInt("admin_id"),
+                        rs.getString("store_name"),
+                        rs.getString("category")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

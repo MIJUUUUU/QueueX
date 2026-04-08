@@ -3,6 +3,7 @@ package ui;
 import common.PhoneNumberUtil;
 import common.ValidationUtil;
 import dto.Customer;
+import dto.Store;
 import service.CustomerService;
 import dto.Waiting;
 import service.WaitingService;
@@ -87,10 +88,16 @@ public class CustomerUI {
 
     System.out.println("\n=== 내 대기 현황 ===");
     for (Waiting w : waitingList) {
+        Store store = waitingService.getStoreById(w.getStoreId());
+        String storeName = store != null ? store.getStoreName() : "알 수 없음";
+        List<String> orderSummaries = waitingService.getOrderSummariesByWaitingId(w.getWaitingId());
+
+        System.out.println("가게명   : " + storeName);
         System.out.println("대기 번호 : " + w.getWaitingNumber());
         System.out.println("인원수   : " + w.getPeopleCount() + "명");
         System.out.println("상태     : " + w.getStatus());
         System.out.println("등록 시각 : " + w.getCreatedAt());
+        System.out.println("주문내역 : " + (orderSummaries.isEmpty() ? "없음" : String.join(", ", orderSummaries)));
         System.out.println("--------------------");
     }
 }
