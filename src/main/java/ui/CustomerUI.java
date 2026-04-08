@@ -51,7 +51,13 @@ public class CustomerUI {
             System.out.println("등록되지 않은 번호입니다. 신규 가입을 진행합니다.");
             System.out.print("사용할 비밀번호를 입력하세요: ");
             String password = scanner.nextLine().trim();
-            Customer newCustomer = customerService.login(phone, password);
+            Customer newCustomer = customerService.register(phone, password);
+
+            if (newCustomer == null) {
+                System.out.println("회원가입에 실패했습니다. 다시 시도해주세요.");
+                return null;
+            }
+
             System.out.println("가입이 완료되었습니다. 환영합니다!");
             return newCustomer;
         }
