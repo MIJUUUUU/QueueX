@@ -20,9 +20,7 @@ services:
     restart: unless-stopped
 
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: miju03/queuex-app:latest
     container_name: queuex-app
     depends_on:
       mysql:

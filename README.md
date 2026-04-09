@@ -270,6 +270,11 @@ java -jar target/queuex-1.0-SNAPSHOT-jar-with-dependencies.jar
 
 ## Docker 실행
 
+Compose 파일 구성:
+- `docker-compose.yml` : 배포용, `app`은 Docker Hub 이미지(`miju03/queuex-app:latest`) 사용
+- `docker-compose.dev.yml` : 개발용 override, `app`을 로컬 `Dockerfile` 기준으로 build
+- `docker-compose.shared.yml` : 공용 DB 접속용 override, `app`이 지정된 공유 MySQL 서버를 사용
+
 MySQL만 백그라운드로 실행:
 
 ```bash
@@ -307,6 +312,57 @@ DB를 초기화부터 다시 시작하려면:
 docker compose down -v
 docker compose up -d mysql
 docker compose run --rm app
+```
+
+### 개발용 Docker 실행
+
+로컬 코드 수정본으로 `app` 이미지를 직접 빌드해 실행하려면:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+
+### 배포용 Docker 실행
+
+Docker Hub에 올린 이미지를 그대로 사용하려면:
+
+```bash
+docker compose up
+```
+
+### 공용 DB(공유 MySQL) 사용
+
+한 대의 노트북 또는 서버에서 MySQL을 공용으로 띄우고, 다른 기기들이 같은 DB를 보도록 실행할 수 있습니다.
+
+- DB 서버 역할 기기:
+
+```bash
+docker compose up -d mysql
+```
+
+- 다른 기기:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.shared.yml run --rm app
+```
+
+현재 `docker-compose.shared.yml`은 `192.168.0.8:3308`의 공용 DB를 보도록 설정되어 있습니다.
+
+### Docker Hub 이미지 업데이트
+
+- `docker push`는 compose 파일 전체를 올리는 것이 아니라, **직접 지정해서 push한 이미지 태그만** 업로드합니다.
+- 예를 들어 아래 명령은 배포용 이미지 하나만 올립니다.
+
+```bash
+docker build -t miju03/queuex-app:latest .
+docker push miju03/queuex-app:latest
+```
+
+- 개발용 태그까지 올리고 싶을 때만 별도로 build/push 해야 합니다.
+
+```bash
+docker build -t miju03/queuex-app:dev .
+docker push miju03/queuex-app:dev
 ```
 
 ## 다른 컴퓨터에서 실행
