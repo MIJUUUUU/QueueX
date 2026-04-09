@@ -87,6 +87,8 @@ public class AdminSeatUI {
       if (!handleCalledWaiting(target)) {
         return true;
       }
+
+      return false;
     }
   }
 
@@ -105,14 +107,16 @@ public class AdminSeatUI {
       switch (input) {
         case "1":
           if (waitingService.enterWaiting(waiting.getWaitingId())) {
-            System.out.println("입장 처리 완료 !!");
+            System.out.println("입장 처리가 완료되었습니다.");
+            System.out.println("현재 좌석 상황에 맞게 수용 인원을 다시 입력해주세요.");
           } else {
             System.out.println("입장 처리에 실패했습니다.");
           }
           return true;
         case "2":
           if (waitingService.noshowWaiting(waiting.getWaitingId())) {
-            System.out.println("노쇼 처리 완료 !!");
+            System.out.println("노쇼 처리가 완료되었습니다.");
+            System.out.println("현재 좌석 상황에 맞게 수용 인원을 다시 입력해주세요.");
           } else {
             System.out.println("노쇼 처리에 실패했습니다.");
           }
