@@ -38,7 +38,7 @@ public class AdminSeatUI {
 
       if (seatCount > store.getMaxCapacity()) {
         System.out.println(
-            ConsoleStyle.error(store.getStoreName() + "의 최대 수용 가능 인원은 " + store.getMaxCapacity() + "명입니다.")
+            ConsoleStyle.error(store.getStoreName() + "의 매장 좌석 수는 " + store.getMaxCapacity() + "석입니다.")
         );
         continue;
       }
