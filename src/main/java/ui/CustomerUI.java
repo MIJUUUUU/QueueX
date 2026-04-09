@@ -192,18 +192,16 @@ public class CustomerUI {
                 int currentPosition = waitingService.getCurrentPosition(w.getStoreId(), w.getWaitingNumber());
 
                 System.out.println();
-                System.out.println("┌──────────────────────────────────────┐");
-                System.out.printf("│ %-36s │%n", storeName + " 대기 정보");
-                System.out.println("├──────────────────────────────────────┤");
-                System.out.printf("│ %-10s %-23s │%n", "대기 번호", w.getWaitingNumber() + "번");
-                System.out.printf("│ %-10s %-23s │%n", "전체 순서", currentPosition + "번째");
-                System.out.printf("│ %-10s %-23s │%n", "인원수", w.getPeopleCount() + "명");
-                System.out.printf("│ %-10s %-23s │%n", "등록 시각", formatDateTime(w.getCreatedAt()));
-                System.out.println("├──────────────────────────────────────┤");
-                System.out.printf("│ %-36s │%n", trimForBox("안내: " + stripAnsi(buildWaitingGuideMessage(w.getStatus(), currentPosition))));
-                System.out.printf("│ %-36s │%n", trimForBox("주문: " + (orderSummaries.isEmpty() ? "없음" : String.join(", ", orderSummaries))));
-                System.out.println("└──────────────────────────────────────┘");
-                System.out.println("안내      : " + buildWaitingGuideMessage(w.getStatus(), currentPosition));
+                System.out.println(ConsoleStyle.highlight("[" + storeName + "]"));
+                System.out.println(
+                    w.getWaitingNumber() + "번"
+                        + " | " + currentPosition + "번째"
+                        + " | " + w.getPeopleCount() + "명"
+                        + " | " + formatDateTime(w.getCreatedAt())
+                );
+                System.out.println("안내: " + buildWaitingGuideMessage(w.getStatus(), currentPosition));
+                System.out.println("주문: " + (orderSummaries.isEmpty() ? "없음" : String.join(", ", orderSummaries)));
+                System.out.println("----------------------------------------");
             }
             System.out.println();
             System.out.println(ConsoleStyle.divider());
@@ -354,16 +352,5 @@ public class CustomerUI {
             return "-";
         }
         return dateTime.format(DATE_TIME_FORMATTER);
-    }
-
-    private String trimForBox(String value) {
-        if (value.length() <= 36) {
-            return value;
-        }
-        return value.substring(0, 33) + "...";
-    }
-
-    private String stripAnsi(String value) {
-        return value.replaceAll("\\u001B\\[[;\\d]*m", "");
     }
 }
