@@ -1,5 +1,6 @@
 package ui;
 
+import common.ConsoleStyle;
 import common.ValidationUtil;
 import dto.Admin;
 import dto.AdminStatistics;
@@ -27,23 +28,31 @@ public class AdminStatsUI {
     }
 
     while (true) {
-      System.out.println("===== 가게 목록 =====");
+      System.out.println();
+      System.out.println(ConsoleStyle.divider());
+      System.out.println(ConsoleStyle.title("통계 조회 가게 목록"));
+      System.out.println(ConsoleStyle.divider());
 
       for (int i = 0; i < stores.size(); i++) {
         System.out.println((i + 1) + ". " + stores.get(i).getStoreName());
       }
+      System.out.println("0. 뒤로 가기");
 
       System.out.print("선택 >> ");
       String input = s.nextLine().trim();
 
+      if ("0".equals(input)) {
+        return;
+      }
+
       if (!ValidationUtil.isPositiveInteger(input)) {
-        System.out.println("잘못된 입력입니다. 숫자를 입력해주세요.");
+        System.out.println(ConsoleStyle.error("잘못된 입력입니다. 숫자를 입력해주세요."));
         continue;
       }
 
       int selected = Integer.parseInt(input);
       if (selected < 1 || selected > stores.size()) {
-        System.out.println("목록에 있는 번호를 입력해주세요.");
+        System.out.println(ConsoleStyle.error("목록에 있는 번호를 입력해주세요."));
         continue;
       }
 
@@ -57,13 +66,15 @@ public class AdminStatsUI {
 
     while (true) {
       System.out.println();
-      System.out.println("[" + store.getStoreName() + " - 통계 조회]");
+      System.out.println(ConsoleStyle.title("[" + store.getStoreName() + " - 통계 조회]"));
       System.out.println();
-      System.out.println("===== 오늘 통계 =====");
+      System.out.println(ConsoleStyle.divider());
+      System.out.println(ConsoleStyle.title("오늘 통계"));
+      System.out.println(ConsoleStyle.divider());
       System.out.println("총 방문 고객 수: " + statistics.getTotalVisitedCustomers() + "명");
       System.out.println("총 웨이팅 수: " + statistics.getTotalWaitingCount() + "건");
       System.out.println();
-      System.out.println("===== 메뉴 통계 =====");
+      System.out.println(ConsoleStyle.title("메뉴 통계"));
       if (statistics.getMenuStats().isEmpty()) {
         System.out.println("주문 내역이 없습니다.");
       } else {
@@ -72,18 +83,18 @@ public class AdminStatsUI {
         }
       }
       System.out.println();
-      System.out.println("===== 노쇼 =====");
+      System.out.println(ConsoleStyle.title("노쇼"));
       System.out.println("노쇼 건수: " + statistics.getNoShowCount() + "건");
       System.out.println();
       System.out.println("0. 뒤로가기");
-      System.out.print("선택 >> ");
+      System.out.print("뒤로가려면 0 입력 >> ");
 
       String input = s.nextLine().trim();
       if ("0".equals(input)) {
         return;
       }
 
-      System.out.println("잘못된 입력입니다. 뒤로가려면 0을 입력해주세요.");
+      System.out.println(ConsoleStyle.error("잘못된 입력입니다. 뒤로가려면 0을 입력해주세요."));
     }
   }
 }

@@ -1,5 +1,6 @@
 package ui;
 
+import common.ConsoleStyle;
 import common.ValidationUtil;
 import dto.Admin;
 import dto.Store;
@@ -27,7 +28,10 @@ public class AdminStoreUI {
     }
 
     while (true) {
-      System.out.println("\n=== 선택 가능한 가게 목록 ===");
+      System.out.println();
+      System.out.println(ConsoleStyle.divider());
+      System.out.println(ConsoleStyle.title("선택 가능한 가게 목록"));
+      System.out.println(ConsoleStyle.divider());
 
       for (int i = 0; i < stores.size(); i++) {
         Store store = stores.get(i);
@@ -43,20 +47,20 @@ public class AdminStoreUI {
       }
 
       if (!ValidationUtil.isPositiveInteger(input)) {
-        System.out.println("잘못된 입력입니다. 숫자를 입력해주세요.");
+        System.out.println(ConsoleStyle.error("잘못된 입력입니다. 숫자를 입력해주세요."));
         continue;
       }
 
       int selected = Integer.parseInt(input);
 
       if (selected < 1 || selected > stores.size()) {
-        System.out.println("목록에 있는 번호를 입력해주세요.");
+        System.out.println(ConsoleStyle.error("목록에 있는 번호를 입력해주세요."));
         continue;
       }
 
       // 선택한 가게 운영 화면으로 진입.
       Store selectedStore = stores.get(selected - 1);
-      System.out.println(selectedStore.getStoreName() + " 좌석 운영 화면으로 이동합니다.");
+      System.out.println(ConsoleStyle.info(selectedStore.getStoreName() + " 운영 화면으로 이동합니다."));
       adminSeatUI.startSeatFlow(selectedStore);
       return;
     }
