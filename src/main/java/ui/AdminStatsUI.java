@@ -32,10 +32,13 @@ public class AdminStatsUI {
       System.out.println(ConsoleStyle.divider());
       System.out.println(ConsoleStyle.title("통계 조회 가게 목록"));
       System.out.println(ConsoleStyle.divider());
+      System.out.printf("%-4s %-20s%n", "번호", "가게명");
+      System.out.println("----------------------------");
 
       for (int i = 0; i < stores.size(); i++) {
-        System.out.println((i + 1) + ". " + stores.get(i).getStoreName());
+        System.out.printf("%-4d %-20s%n", i + 1, stores.get(i).getStoreName());
       }
+      System.out.println("----------------------------");
       System.out.println("0. 뒤로 가기");
 
       System.out.print("선택 >> ");
@@ -78,9 +81,12 @@ public class AdminStatsUI {
       if (statistics.getMenuStats().isEmpty()) {
         System.out.println("주문 내역이 없습니다.");
       } else {
+        System.out.printf("%-16s %-8s%n", "메뉴명", "주문 건수");
+        System.out.println("------------------------------");
         for (MenuStat menuStat : statistics.getMenuStats()) {
-          System.out.println(menuStat.getMenuName() + ": " + menuStat.getOrderCount() + "건");
+          System.out.printf("%-16s %-8s%n", menuStat.getMenuName(), menuStat.getOrderCount() + "건");
         }
+        System.out.println("------------------------------");
       }
       System.out.println();
       System.out.println(ConsoleStyle.title("노쇼"));

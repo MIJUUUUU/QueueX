@@ -32,11 +32,14 @@ public class AdminStoreUI {
       System.out.println(ConsoleStyle.divider());
       System.out.println(ConsoleStyle.title("선택 가능한 가게 목록"));
       System.out.println(ConsoleStyle.divider());
+      System.out.printf("%-4s %-20s%n", "번호", "가게명");
+      System.out.println("----------------------------");
 
       for (int i = 0; i < stores.size(); i++) {
         Store store = stores.get(i);
-        System.out.println((i + 1) + ". " + store.getStoreName());
+        System.out.printf("%-4d %-20s%n", i + 1, store.getStoreName());
       }
+      System.out.println("----------------------------");
 
       System.out.println("0. 뒤로 가기");
       System.out.print("선택 >> ");

@@ -37,10 +37,13 @@ public class WaitingRegisterUI {
             System.out.println(ConsoleStyle.divider());
             System.out.println(ConsoleStyle.title("가게 목록"));
             System.out.println(ConsoleStyle.divider());
+            System.out.printf("%-4s %-16s %-10s%n", "번호", "가게명", "카테고리");
+            System.out.println("----------------------------------------");
             for (int i = 0; i < stores.size(); i++) {
                 Store s = stores.get(i);
-                System.out.println((i + 1) + ". " + s.getStoreName() + " [" + s.getCategory() + "]");
+                System.out.printf("%-4d %-16s %-10s%n", i + 1, s.getStoreName(), "[" + s.getCategory() + "]");
             }
+            System.out.println("----------------------------------------");
             System.out.println("0. 취소");
             System.out.print("가게를 선택하세요: ");
             String storeInput = scanner.nextLine().trim();
@@ -78,12 +81,21 @@ public class WaitingRegisterUI {
                 System.out.println(ConsoleStyle.divider());
                 System.out.println(ConsoleStyle.title(selectedStore.getStoreName() + " 메뉴"));
                 System.out.println(ConsoleStyle.divider());
+                System.out.printf("%-4s %-16s %-10s%n", "번호", "메뉴명", "가격");
+                System.out.println("----------------------------------------");
                 for (int i = 0; i < menus.size(); i++) {
                     Menu m = menus.get(i);
-                    System.out.println((i + 1) + ". " + m.getMenuName() + " - " + m.getPrice() + "원");
+                    System.out.printf("%-4d %-16s %-10s%n", i + 1, m.getMenuName(), m.getPrice() + "원");
                 }
-                System.out.println("메뉴 번호와 수량을 입력하세요 (예: 1 2 → 1번 메뉴 2개)");
-                System.out.println("주문 완료 시 0 입력, 가게 선택으로 돌아가려면 B 입력");
+                System.out.println("----------------------------------------");
+                System.out.println();
+                System.out.println("┌──────────────────────────────────────┐");
+                System.out.println("│ 주문 방법                            │");
+                System.out.println("│ - 메뉴 번호와 수량을 입력하세요      │");
+                System.out.println("│   예: 1 2  ->  1번 메뉴 2개          │");
+                System.out.println("│ - 주문 완료: 0                       │");
+                System.out.println("│ - 가게 목록으로 돌아가기: B          │");
+                System.out.println("└──────────────────────────────────────┘");
 
                 while (true) {
                     System.out.print("입력: ");

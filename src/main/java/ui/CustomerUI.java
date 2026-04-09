@@ -32,61 +32,74 @@ public class CustomerUI {
     public boolean start() {
         Customer customer = handleLoginOrRegister();
         if (customer == null) {
-            System.out.println(ConsoleStyle.error(
-                "비밀번호를 " + customerService.getMaxPasswordAttempts() + "회 이상 틀렸습니다. 프로그램을 종료합니다."
-            ));
             return false;
         }
         return showMainMenu(customer);
     }
 
     private Customer handleLoginOrRegister() {
-        System.out.println(ConsoleStyle.divider());
-        System.out.println(ConsoleStyle.title("QueueX에 오신 것을 환영합니다"));
-        System.out.println(ConsoleStyle.divider());
-        System.out.print("전화번호를 입력하세요: ");
-        String phone = scanner.nextLine().trim();
+        int phoneAttempts = 0;
 
-        if (!PhoneNumberUtil.isValid(phone)) {
-            System.out.println(ConsoleStyle.error("올바른 전화번호 형식이 아닙니다. (예: 01012345678)"));
+        while (true) {
+            System.out.println(ConsoleStyle.divider());
+            System.out.println(ConsoleStyle.title("QueueX에 오신 것을 환영합니다"));
+            System.out.println(ConsoleStyle.divider());
+            System.out.print("전화번호를 입력하세요: ");
+            String phone = scanner.nextLine().trim();
+
+            if (!PhoneNumberUtil.isValid(phone)) {
+                phoneAttempts++;
+                System.out.println(ConsoleStyle.error("올바른 전화번호 형식이 아닙니다. (예: 01012345678)"));
+                if (phoneAttempts >= 3) {
+                    System.out.println(ConsoleStyle.error("전화번호 형식을 3회 이상 틀렸습니다. 프로그램을 종료합니다."));
+                    return null;
+                }
+
+                System.out.println(ConsoleStyle.warning("남은 시도 횟수: " + (3 - phoneAttempts) + "회"));
+                System.out.println();
+                continue;
+            }
+            phone = PhoneNumberUtil.normalize(phone);
+            phoneAttempts = 0;
+
+            if (!customerService.isRegistered(phone)) {
+                System.out.println(ConsoleStyle.info("등록되지 않은 번호입니다. 신규 가입을 진행합니다."));
+                System.out.print("사용할 비밀번호를 입력하세요: ");
+                String password = scanner.nextLine().trim();
+                Customer newCustomer = customerService.register(phone, password);
+
+                if (newCustomer == null) {
+                    System.out.println(ConsoleStyle.error("회원가입에 실패했습니다. 다시 시도해주세요."));
+                    return null;
+                }
+
+                System.out.println(ConsoleStyle.success("가입이 완료되었습니다. 환영합니다!"));
+                return newCustomer;
+            }
+
+            int attempts = 0;
+            while (attempts < customerService.getMaxPasswordAttempts()) {
+                System.out.print("비밀번호를 입력하세요: ");
+                String password = scanner.nextLine().trim();
+
+                Customer customer = customerService.login(phone, password);
+                if (customer != null) {
+                    System.out.println();
+                    System.out.println(ConsoleStyle.success("고객 로그인에 성공했습니다."));
+                    return customer;
+                }
+
+                attempts++;
+                int remaining = customerService.getMaxPasswordAttempts() - attempts;
+                if (remaining > 0) {
+                    System.out.println(ConsoleStyle.error("비밀번호가 일치하지 않습니다. 남은 시도 횟수: " + remaining + "회"));
+                }
+            }
+            System.out.println(ConsoleStyle.error(
+                "비밀번호를 " + customerService.getMaxPasswordAttempts() + "회 이상 틀렸습니다. 프로그램을 종료합니다."
+            ));
             return null;
         }
-        phone = PhoneNumberUtil.normalize(phone);
-
-        if (!customerService.isRegistered(phone)) {
-            System.out.println(ConsoleStyle.info("등록되지 않은 번호입니다. 신규 가입을 진행합니다."));
-            System.out.print("사용할 비밀번호를 입력하세요: ");
-            String password = scanner.nextLine().trim();
-            Customer newCustomer = customerService.register(phone, password);
-
-            if (newCustomer == null) {
-                System.out.println(ConsoleStyle.error("회원가입에 실패했습니다. 다시 시도해주세요."));
-                return null;
-            }
-
-            System.out.println(ConsoleStyle.success("가입이 완료되었습니다. 환영합니다!"));
-            return newCustomer;
-        }
-
-        int attempts = 0;
-        while (attempts < customerService.getMaxPasswordAttempts()) {
-            System.out.print("비밀번호를 입력하세요: ");
-            String password = scanner.nextLine().trim();
-
-            Customer customer = customerService.login(phone, password);
-            if (customer != null) {
-                System.out.println();
-                System.out.println(ConsoleStyle.success("고객 로그인에 성공했습니다."));
-                return customer;
-            }
-
-            attempts++;
-            int remaining = customerService.getMaxPasswordAttempts() - attempts;
-            if (remaining > 0) {
-                System.out.println(ConsoleStyle.error("비밀번호가 일치하지 않습니다. 남은 시도 횟수: " + remaining + "회"));
-            }
-        }
-        return null;
     }
 
     private boolean showMainMenu(Customer customer) {
@@ -97,7 +110,7 @@ public class CustomerUI {
             System.out.println(ConsoleStyle.divider());
             System.out.println("1. 가게 선택");
             System.out.println("2. 내 대기 조회");
-            System.out.println("3. 종료");
+            System.out.println("0. 종료");
             System.out.println(ConsoleStyle.divider());
             System.out.print("선택 >> ");
 
@@ -112,7 +125,7 @@ public class CustomerUI {
                         return false;
                     }
                     break;
-                case "3":
+                case "0":
                     System.out.println(ConsoleStyle.info("프로그램을 종료합니다."));
                     return false;
                 default:
@@ -145,7 +158,7 @@ public class CustomerUI {
                     break;
                 case "2":
                     return true;
-                case "3":
+                case "0":
                     System.out.println(ConsoleStyle.info("프로그램을 종료합니다."));
                     return false;
                 default:
@@ -162,7 +175,15 @@ public class CustomerUI {
         System.out.println(ConsoleStyle.divider());
 
         if (waitingList.isEmpty()) {
+            System.out.println();
             System.out.println(ConsoleStyle.warning("현재 등록된 대기가 없습니다."));
+            System.out.println(ConsoleStyle.info("가게를 선택해 새 대기를 등록할 수 있습니다."));
+            System.out.println();
+            System.out.println("┌──────────────────────────────────────┐");
+            System.out.println("│  아직 진행 중인 대기가 없습니다.     │");
+            System.out.println("│  1번 메뉴에서 대기를 등록해보세요.   │");
+            System.out.println("└──────────────────────────────────────┘");
+            System.out.println(ConsoleStyle.divider());
         } else {
             for (Waiting w : waitingList) {
                 Store store = waitingService.getStoreById(w.getStoreId());
@@ -170,20 +191,27 @@ public class CustomerUI {
                 List<String> orderSummaries = waitingService.getOrderSummariesByWaitingId(w.getWaitingId());
                 int currentPosition = waitingService.getCurrentPosition(w.getStoreId(), w.getWaitingNumber());
 
-                System.out.println("가게명    : " + storeName);
-                System.out.println("대기 번호 : " + w.getWaitingNumber());
-                System.out.println("내 순서   : " + currentPosition + "번째");
-                System.out.println("인원수    : " + w.getPeopleCount() + "명");
+                System.out.println();
+                System.out.println("┌──────────────────────────────────────┐");
+                System.out.printf("│ %-36s │%n", storeName + " 대기 정보");
+                System.out.println("├──────────────────────────────────────┤");
+                System.out.printf("│ %-10s %-23s │%n", "대기 번호", w.getWaitingNumber() + "번");
+                System.out.printf("│ %-10s %-23s │%n", "전체 순서", currentPosition + "번째");
+                System.out.printf("│ %-10s %-23s │%n", "인원수", w.getPeopleCount() + "명");
+                System.out.printf("│ %-10s %-23s │%n", "등록 시각", formatDateTime(w.getCreatedAt()));
+                System.out.println("├──────────────────────────────────────┤");
+                System.out.printf("│ %-36s │%n", trimForBox("안내: " + stripAnsi(buildWaitingGuideMessage(w.getStatus(), currentPosition))));
+                System.out.printf("│ %-36s │%n", trimForBox("주문: " + (orderSummaries.isEmpty() ? "없음" : String.join(", ", orderSummaries))));
+                System.out.println("└──────────────────────────────────────┘");
                 System.out.println("안내      : " + buildWaitingGuideMessage(w.getStatus(), currentPosition));
-                System.out.println("등록 시각 : " + formatDateTime(w.getCreatedAt()));
-                System.out.println("주문내역  : " + (orderSummaries.isEmpty() ? "없음" : String.join(", ", orderSummaries)));
-                System.out.println(ConsoleStyle.divider());
             }
+            System.out.println();
+            System.out.println(ConsoleStyle.divider());
         }
 
         System.out.println("1. 대기 취소");
         System.out.println("2. 메뉴로 이동");
-        System.out.println("3. 종료");
+        System.out.println("0. 종료");
         System.out.print("선택 >> ");
     }
 
@@ -326,5 +354,16 @@ public class CustomerUI {
             return "-";
         }
         return dateTime.format(DATE_TIME_FORMATTER);
+    }
+
+    private String trimForBox(String value) {
+        if (value.length() <= 36) {
+            return value;
+        }
+        return value.substring(0, 33) + "...";
+    }
+
+    private String stripAnsi(String value) {
+        return value.replaceAll("\\u001B\\[[;\\d]*m", "");
     }
 }
