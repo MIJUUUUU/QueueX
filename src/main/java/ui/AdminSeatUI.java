@@ -21,6 +21,7 @@ public class AdminSeatUI {
   // 좌석 운영 시스템 시작
   public void startSeatFlow(Store store) {
     while (true) {
+      System.out.println("\n=== " + store.getStoreName() + " 좌석 운영 ===");
       System.out.print("수용 인원 입력 >> ");
       String input = s.nextLine().trim();
 
@@ -48,7 +49,7 @@ public class AdminSeatUI {
         return;
       }
 
-      System.out.println("===== 추천 순위 =====");
+      System.out.println("\n===== 추천 순위 =====");
       for (Waiting waiting : recommendedList) {
         System.out.println("대기 " + waiting.getWaitingNumber() + "번 / " + waiting.getPeopleCount() + "명");
       }
@@ -79,7 +80,7 @@ public class AdminSeatUI {
         return;
       }
 
-      System.out.println("호출 완료 !!");
+      System.out.println("호출이 완료되었습니다.");
 
       if (!handleCalledWaiting(target)) {
         return;
@@ -102,14 +103,14 @@ public class AdminSeatUI {
       switch (input) {
         case "1":
           if (waitingService.enterWaiting(waiting.getWaitingId())) {
-            System.out.println("입장 처리 완료 !!");
+            System.out.println("입장 처리가 완료되었습니다.");
           } else {
             System.out.println("입장 처리에 실패했습니다.");
           }
           return true;
         case "2":
           if (waitingService.noshowWaiting(waiting.getWaitingId())) {
-            System.out.println("노쇼 처리 완료 !!");
+            System.out.println("노쇼 처리가 완료되었습니다.");
           } else {
             System.out.println("노쇼 처리에 실패했습니다.");
           }

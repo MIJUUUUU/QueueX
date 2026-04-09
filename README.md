@@ -116,7 +116,7 @@ QueueX는 이를 해결하기 위해
 [관리자 메뉴]
 1. 가게 선택 및 운영 시작
 2. 통계 조회
-3. 로그아웃
+0. 로그아웃
 ```
 
 ### 1. 가게 선택 및 운영 시작
@@ -192,6 +192,26 @@ QueueX는 이를 해결하기 위해
 - `Dockerfile` : 앱 Docker 빌드 설정
 - `docker-compose.yml` : 앱 + MySQL Docker Compose 설정
 
+## 현재 구현 범위
+
+- 고객
+  - 전화번호/비밀번호 기반 로그인 및 회원가입
+  - 가게 선택, 선주문 포함 대기 등록
+  - 내 대기 조회
+  - 내 순서 조회
+  - 대기 취소
+- 관리자
+  - 인증번호 기반 로그인
+  - 가게 선택 및 좌석 운영
+  - 추천 손님 호출
+  - 입장 처리 / 노쇼 처리
+  - 오늘 통계 조회
+- 공통
+  - 전화번호 정규화 및 검증
+  - 비밀번호/인증번호 해시 비교
+  - 공통 입력 검증
+  - Docker 기반 실행 환경
+
 ## 공통 구조 규칙
 
 - 콘솔 입력은 `Main`에서 `Scanner(System.in)`를 하나만 생성하고 각 UI에 전달하여 공유합니다.
@@ -257,6 +277,15 @@ DB를 초기화부터 다시 시작하려면:
 
 ```bash
 docker compose down -v
+docker compose up -d mysql
+docker compose run --rm app
+```
+
+## 다른 컴퓨터에서 실행
+
+다른 컴퓨터에서도 Docker만 설치되어 있으면 아래 순서로 실행할 수 있습니다.
+
+```bash
 docker compose up -d mysql
 docker compose run --rm app
 ```

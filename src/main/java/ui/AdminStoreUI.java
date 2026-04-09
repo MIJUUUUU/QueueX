@@ -27,7 +27,7 @@ public class AdminStoreUI {
     }
 
     while (true) {
-      System.out.println("[선택 가능한 가게 목록]");
+      System.out.println("\n=== 선택 가능한 가게 목록 ===");
 
       for (int i = 0; i < stores.size(); i++) {
         Store store = stores.get(i);
@@ -56,7 +56,7 @@ public class AdminStoreUI {
 
       // 선택한 가게 운영 화면으로 진입.
       Store selectedStore = stores.get(selected - 1);
-      System.out.println(selectedStore.getStoreName() + " 관리자 메뉴로 진입합니다.");
+      System.out.println(selectedStore.getStoreName() + " 좌석 운영 화면으로 이동합니다.");
       adminSeatUI.startSeatFlow(selectedStore);
       return;
     }
