@@ -21,6 +21,7 @@ public class AdminSeatUI {
   // 좌석 운영 시스템 시작
   public void startSeatFlow(Store store) {
     while (true) {
+      System.out.println("\n=== " + store.getStoreName() + " 좌석 운영 ===");
       System.out.print("수용 인원 입력 >> ");
       String input = s.nextLine().trim();
 
@@ -30,25 +31,27 @@ public class AdminSeatUI {
       }
 
       int seatCount = Integer.parseInt(input);
-      runSeatCycle(store, seatCount);
-      return;
+      if (runSeatCycle(store, seatCount)) {
+        return;
+      }
     }
   }
 
   // 추천 -> 호출 -> 입장/노쇼 처리를 반복
-  private void runSeatCycle(Store store, int seatCount) {
+  private boolean runSeatCycle(Store store, int seatCount) {
     while (true) {
       List<Waiting> waitingList = waitingService.getWaitingByStoreId(store.getStoreId());
       List<Waiting> recommendedList = recommendationService.recommend(waitingList, seatCount);
 
       if (recommendedList.isEmpty()) {
-        if (!handleEmptyWaiting()) {
-          return;
+        if (waitingList.isEmpty()) {
+          return handleEmptyWaiting();
         }
-        return;
+
+        return handleNoRecommendation(waitingList, seatCount);
       }
 
-      System.out.println("===== 추천 순위 =====");
+      System.out.println("\n===== 추천 순위 =====");
       for (Waiting waiting : recommendedList) {
         System.out.println("대기 " + waiting.getWaitingNumber() + "번 / " + waiting.getPeopleCount() + "명");
       }
@@ -64,7 +67,7 @@ public class AdminSeatUI {
       String select = s.nextLine().trim();
 
       if ("0".equals(select)) {
-        return;
+        return true;
       }
 
       if (!"1".equals(select)) {
@@ -76,13 +79,13 @@ public class AdminSeatUI {
 
       if (!called) {
         System.out.println("호출 처리에 실패했습니다.");
-        return;
+        return true;
       }
 
-      System.out.println("호출 완료 !!");
+      System.out.println("호출이 완료되었습니다.");
 
       if (!handleCalledWaiting(target)) {
-        return;
+        return true;
       }
     }
   }
@@ -137,6 +140,34 @@ public class AdminSeatUI {
       if ("N".equals(input)) {
         System.out.println("좌석 운영을 종료합니다.");
         return false;
+      }
+
+      System.out.println("잘못된 입력입니다. 다시 입력해주세요.");
+    }
+  }
+
+  private boolean handleNoRecommendation(List<Waiting> waitingList, int seatCount) {
+    while (true) {
+      System.out.println("수용 인원 " + seatCount + "명 이하의 추천 가능한 대기 손님이 없습니다.");
+      System.out.println();
+      System.out.println("[현재 전체 대기 FIFO]");
+      for (Waiting waiting : waitingList) {
+        System.out.println("대기 " + waiting.getWaitingNumber() + "번 / " + waiting.getPeopleCount() + "명");
+      }
+      System.out.println();
+      System.out.println("1. 수용 인원 다시 입력");
+      System.out.println("0. 관리자 메뉴");
+      System.out.print("선택 >> ");
+
+      String input = s.nextLine().trim();
+
+      if ("1".equals(input)) {
+        return false;
+      }
+
+      if ("0".equals(input)) {
+        System.out.println("관리자 메뉴로 돌아갑니다.");
+        return true;
       }
 
       System.out.println("잘못된 입력입니다. 다시 입력해주세요.");
