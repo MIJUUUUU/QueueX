@@ -160,7 +160,7 @@ public class AdminSeatUI {
 
       if ("N".equals(input)) {
         System.out.println("운영을 종료합니다.");
-        return false;
+        return true;
       }
 
       System.out.println("잘못된 입력입니다. 다시 입력해주세요.");
