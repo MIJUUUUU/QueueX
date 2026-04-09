@@ -31,10 +31,11 @@ public class AdminMenuUI {
 
       switch (input) {
         case "1":
-          System.out.println("가게 선택 및 운영 시작을 선택하셨습니다.");
+          System.out.println("가게 선택 및 운영 화면으로 이동합니다.");
           adminStoreUI.manageStore(admin);
           break;
         case "2":
+          System.out.println("통계 조회 화면으로 이동합니다.");
           adminStatsUI.showStatistics(admin);
           break;
         case "0":
