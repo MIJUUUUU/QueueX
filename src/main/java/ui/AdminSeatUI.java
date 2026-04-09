@@ -35,6 +35,14 @@ public class AdminSeatUI {
       }
 
       int seatCount = Integer.parseInt(input);
+
+      if (seatCount > store.getMaxCapacity()) {
+        System.out.println(
+            ConsoleStyle.error(store.getStoreName() + "의 최대 수용 가능 인원은 " + store.getMaxCapacity() + "명입니다.")
+        );
+        continue;
+      }
+
       if (runSeatCycle(store, seatCount)) {
         return;
       }

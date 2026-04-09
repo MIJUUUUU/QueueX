@@ -17,6 +17,8 @@ CREATE TABLE IF NOT EXISTS store (
     admin_id INT NOT NULL,
     store_name VARCHAR(100) NOT NULL,
     category VARCHAR(50),
+    max_capacity INT NOT NULL DEFAULT 4,
+    max_group_size INT NOT NULL DEFAULT 4,
     FOREIGN KEY (admin_id) REFERENCES admin(admin_id)
 );
 

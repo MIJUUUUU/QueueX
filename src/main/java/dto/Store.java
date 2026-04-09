@@ -5,15 +5,19 @@ public class Store {
   private int adminId;
   private String storeName;
   private String category;
+  private int maxCapacity;
+  private int maxGroupSize;
 
   public Store() {
   }
 
-  public Store(int storeId, int adminId, String storeName, String category) {
+  public Store(int storeId, int adminId, String storeName, String category, int maxCapacity, int maxGroupSize) {
     this.storeId = storeId;
     this.adminId = adminId;
     this.storeName = storeName;
     this.category = category;
+    this.maxCapacity = maxCapacity;
+    this.maxGroupSize = maxGroupSize;
   }
 
   public int getStoreId() {
@@ -46,5 +50,21 @@ public class Store {
 
   public void setCategory(String category) {
     this.category = category;
+  }
+
+  public int getMaxCapacity() {
+    return maxCapacity;
+  }
+
+  public void setMaxCapacity(int maxCapacity) {
+    this.maxCapacity = maxCapacity;
+  }
+
+  public int getMaxGroupSize() {
+    return maxGroupSize;
+  }
+
+  public void setMaxGroupSize(int maxGroupSize) {
+    this.maxGroupSize = maxGroupSize;
   }
 }

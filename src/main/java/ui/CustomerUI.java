@@ -140,6 +140,7 @@ public class CustomerUI {
         while (true) {
             List<Waiting> waitingList = waitingService.getWaitingByCustomerId(customer.getCustomerId());
             String currentSnapshot = buildWaitingSnapshot(waitingList);
+            boolean hasWaiting = !waitingList.isEmpty();
 
             if (!currentSnapshot.equals(lastSnapshot)) {
                 renderWaitingDashboard(waitingList);
@@ -153,10 +154,19 @@ public class CustomerUI {
 
             switch (input) {
                 case "1":
-                    cancelMyWaiting(customer);
-                    lastSnapshot = null;
+                    if (hasWaiting) {
+                        cancelMyWaiting(customer);
+                        lastSnapshot = null;
+                    } else {
+                        return true;
+                    }
                     break;
                 case "2":
+                    if (!hasWaiting) {
+                        System.out.println(ConsoleStyle.error("올바른 메뉴 번호를 입력해주세요."));
+                        sleepSilently(1200);
+                        break;
+                    }
                     return true;
                 case "0":
                     System.out.println(ConsoleStyle.info("프로그램을 종료합니다."));
@@ -207,8 +217,12 @@ public class CustomerUI {
             System.out.println(ConsoleStyle.divider());
         }
 
-        System.out.println("1. 대기 취소");
-        System.out.println("2. 메뉴로 이동");
+        if (waitingList.isEmpty()) {
+            System.out.println("1. 메뉴로 이동");
+        } else {
+            System.out.println("1. 대기 취소");
+            System.out.println("2. 메뉴로 이동");
+        }
         System.out.println("0. 종료");
         System.out.print("선택 >> ");
     }

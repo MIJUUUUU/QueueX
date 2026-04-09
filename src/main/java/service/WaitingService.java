@@ -35,6 +35,22 @@ public class WaitingService {
         return menuDAO.getMenusByStoreId(storeId);
     }
 
+    public boolean exceedsMaxCapacity(Store store, int peopleCount) {
+        return store != null && peopleCount > store.getMaxCapacity();
+    }
+
+    public boolean exceedsMaxGroupSize(Store store, int peopleCount) {
+        return store != null && peopleCount > store.getMaxGroupSize();
+    }
+
+    public int getTotalSelectedMenuQuantity(Map<Integer, Integer> selectedMenus) {
+        int totalQuantity = 0;
+        for (int quantity : selectedMenus.values()) {
+            totalQuantity += quantity;
+        }
+        return totalQuantity;
+    }
+
     // 해당 가게 현재 대기 목록 조회
     public List<Waiting> getWaitingByStoreId(int storeId) {
         return waitingDAO.findWaitingByStoreId(storeId);

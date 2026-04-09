@@ -12,9 +12,9 @@ import java.util.List;
 
 public class MenuDAO {
 
-    // 가게별 판매 중인 메뉴 조회
+    // 가게별 전체 메뉴 조회
     public List<Menu> getMenusByStoreId(int storeId) {
-        String sql = "SELECT menu_id, store_id, menu_name, price, is_available FROM menu WHERE store_id = ? AND is_available = true";
+        String sql = "SELECT menu_id, store_id, menu_name, price, is_available FROM menu WHERE store_id = ? ORDER BY menu_id";
         List<Menu> menus = new ArrayList<>();
 
         try (Connection conn = DBUtil.getConnection();

@@ -37,7 +37,7 @@ public class AdminDAO {
   }
 
   public List<Store> findStoresByAdminId(int adminId) {
-    String sql = "SELECT store_id, admin_id, store_name, category FROM store WHERE admin_id = ?";
+    String sql = "SELECT store_id, admin_id, store_name, category, max_capacity, max_group_size FROM store WHERE admin_id = ?";
     List<Store> stores = new ArrayList<>();
 
     try (
@@ -52,7 +52,9 @@ public class AdminDAO {
               rs.getInt("store_id"),
               rs.getInt("admin_id"),
               rs.getString("store_name"),
-              rs.getString("category")
+              rs.getString("category"),
+              rs.getInt("max_capacity"),
+              rs.getInt("max_group_size")
           ));
         }
       }

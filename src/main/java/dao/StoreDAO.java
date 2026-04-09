@@ -14,7 +14,7 @@ public class StoreDAO {
 
     // 전체 가게 목록 조회
     public List<Store> getAllStores() {
-        String sql = "SELECT store_id, admin_id, store_name, category FROM store";
+        String sql = "SELECT store_id, admin_id, store_name, category, max_capacity, max_group_size FROM store";
         List<Store> stores = new ArrayList<>();
 
         try (Connection conn = DBUtil.getConnection();
@@ -26,7 +26,9 @@ public class StoreDAO {
                     rs.getInt("store_id"),
                     rs.getInt("admin_id"),
                     rs.getString("store_name"),
-                    rs.getString("category")
+                    rs.getString("category"),
+                    rs.getInt("max_capacity"),
+                    rs.getInt("max_group_size")
                 ));
             }
         } catch (SQLException e) {
@@ -36,7 +38,7 @@ public class StoreDAO {
     }
 
     public Store findById(int storeId) {
-        String sql = "SELECT store_id, admin_id, store_name, category FROM store WHERE store_id = ?";
+        String sql = "SELECT store_id, admin_id, store_name, category, max_capacity, max_group_size FROM store WHERE store_id = ?";
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -49,7 +51,9 @@ public class StoreDAO {
                         rs.getInt("store_id"),
                         rs.getInt("admin_id"),
                         rs.getString("store_name"),
-                        rs.getString("category")
+                        rs.getString("category"),
+                        rs.getInt("max_capacity"),
+                        rs.getInt("max_group_size")
                     );
                 }
             }

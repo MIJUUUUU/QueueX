@@ -37,13 +37,20 @@ public class WaitingRegisterUI {
             System.out.println(ConsoleStyle.divider());
             System.out.println(ConsoleStyle.title("가게 목록"));
             System.out.println(ConsoleStyle.divider());
-            System.out.printf("%-4s %-16s %-10s%n", "번호", "가게명", "카테고리");
-            System.out.println("----------------------------------------");
+            System.out.printf("%-4s %-12s %-8s %-10s %-10s%n", "번호", "가게명", "카테고리", "최대수용", "단체제한");
+            System.out.println("--------------------------------------------------------");
             for (int i = 0; i < stores.size(); i++) {
                 Store s = stores.get(i);
-                System.out.printf("%-4d %-16s %-10s%n", i + 1, s.getStoreName(), "[" + s.getCategory() + "]");
+                System.out.printf(
+                    "%-4d %-12s %-8s %-10s %-10s%n",
+                    i + 1,
+                    s.getStoreName(),
+                    "[" + s.getCategory() + "]",
+                    s.getMaxCapacity() + "명",
+                    s.getMaxGroupSize() + "명"
+                );
             }
-            System.out.println("----------------------------------------");
+            System.out.println("--------------------------------------------------------");
             System.out.println("0. 취소");
             System.out.print("가게를 선택하세요: ");
             String storeInput = scanner.nextLine().trim();
@@ -81,18 +88,25 @@ public class WaitingRegisterUI {
                 System.out.println(ConsoleStyle.divider());
                 System.out.println(ConsoleStyle.title(selectedStore.getStoreName() + " 메뉴"));
                 System.out.println(ConsoleStyle.divider());
-                System.out.printf("%-4s %-16s %-10s%n", "번호", "메뉴명", "가격");
-                System.out.println("----------------------------------------");
+                System.out.println(ConsoleStyle.info(
+                    "최대 수용 인원: " + selectedStore.getMaxCapacity() + "명 | 단체 최대 허용 인원: "
+                        + selectedStore.getMaxGroupSize() + "명"
+                ));
+                System.out.printf("%-4s %-16s %-10s %-10s%n", "번호", "메뉴명", "가격", "상태");
+                System.out.println("------------------------------------------------");
                 for (int i = 0; i < menus.size(); i++) {
                     Menu m = menus.get(i);
-                    System.out.printf("%-4d %-16s %-10s%n", i + 1, m.getMenuName(), m.getPrice() + "원");
+                    String status = m.isAvailable() ? "주문 가능" : "품절";
+                    System.out.printf("%-4d %-16s %-10s %-10s%n", i + 1, m.getMenuName(), m.getPrice() + "원", status);
                 }
-                System.out.println("----------------------------------------");
+                System.out.println("------------------------------------------------");
                 System.out.println();
                 System.out.println("┌──────────────────────────────────────┐");
                 System.out.println("│ 주문 방법                            │");
                 System.out.println("│ - 메뉴 번호와 수량을 입력하세요      │");
                 System.out.println("│   예: 1 2  ->  1번 메뉴 2개          │");
+                System.out.println("│ - 총 주문 수량은 단체 제한과 동일    │");
+                System.out.printf("│   최대 %2d개까지 가능합니다         │%n", selectedStore.getMaxGroupSize());
                 System.out.println("│ - 주문 완료: 0                       │");
                 System.out.println("│ - 가게 목록으로 돌아가기: B          │");
                 System.out.println("└──────────────────────────────────────┘");
@@ -135,6 +149,22 @@ public class WaitingRegisterUI {
 
                     int menuIndex = menuNumber - 1;
                     Menu selected = menus.get(menuIndex);
+
+                    if (!selected.isAvailable()) {
+                        System.out.println(ConsoleStyle.error(selected.getMenuName() + "은(는) 현재 품절입니다."));
+                        continue;
+                    }
+
+                    int currentSelectedQuantity = selectedMenus.getOrDefault(selected.getMenuId(), 0);
+                    int nextTotalQuantity =
+                        waitingService.getTotalSelectedMenuQuantity(selectedMenus) - currentSelectedQuantity + quantity;
+                    if (nextTotalQuantity > selectedStore.getMaxGroupSize()) {
+                        System.out.println(
+                            ConsoleStyle.error("총 주문 수량은 " + selectedStore.getMaxGroupSize() + "개를 초과할 수 없습니다.")
+                        );
+                        continue;
+                    }
+
                     selectedMenus.put(selected.getMenuId(), quantity);
                     System.out.println(ConsoleStyle.success(selected.getMenuName() + " " + quantity + "개 추가됨."));
                 }
@@ -160,6 +190,22 @@ public class WaitingRegisterUI {
                 }
 
                 peopleCount = Integer.parseInt(peopleInput);
+
+                if (waitingService.exceedsMaxCapacity(selectedStore, peopleCount)) {
+                    System.out.println(
+                        ConsoleStyle.error(selectedStore.getStoreName() + "의 최대 수용 인원은 "
+                            + selectedStore.getMaxCapacity() + "명입니다.")
+                    );
+                    continue;
+                }
+
+                if (waitingService.exceedsMaxGroupSize(selectedStore, peopleCount)) {
+                    System.out.println(
+                        ConsoleStyle.error("단체 손님 최대 허용 인원은 "
+                            + selectedStore.getMaxGroupSize() + "명입니다. 대기 등록이 불가합니다.")
+                    );
+                    continue;
+                }
                 break;
             }
 

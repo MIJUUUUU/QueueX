@@ -18,13 +18,13 @@ VALUES
 ('882277663e03e23ed876fa788cbbafd6397bf41340d01f529e8d3c43ce3040bf'),
 ('b150642d01e39188c0d00adcf3e0ef451e6fc628e3fd48a426d41686e55cc6bd');
 
-INSERT INTO store (admin_id, store_name, category)
+INSERT INTO store (admin_id, store_name, category, max_capacity, max_group_size)
 VALUES
-(1, '미주옥', '한식'),
-(1, '로마호연', '양식'),
-(1, '이자카야 송', '일식'),
-(2, '빵만드는 집', '카페'),
-(2, '맛있는 카페', '카페');
+(1, '미주옥', '한식', 8, 8),
+(1, '로마호연', '양식', 7, 7),
+(1, '이자카야 송', '일식', 6, 6),
+(2, '빵만드는 집', '카페', 4, 4),
+(2, '맛있는 카페', '카페', 4, 4);
 
 
 INSERT INTO customer (phone, password)
