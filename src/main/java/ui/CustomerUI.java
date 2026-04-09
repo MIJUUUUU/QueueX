@@ -2,6 +2,7 @@ package ui;
 
 import common.PhoneNumberUtil;
 import common.ValidationUtil;
+import common.WaitingStatus;
 import dto.Customer;
 import dto.Store;
 import service.CustomerService;
@@ -31,8 +32,7 @@ public class CustomerUI {
             System.out.println("비밀번호를 " + customerService.getMaxPasswordAttempts() + "회 이상 틀렸습니다. 프로그램을 종료합니다.");
             return false;
         }
-        showMainMenu(customer);
-        return true;
+        return showMainMenu(customer);
     }
 
     private Customer handleLoginOrRegister() {
@@ -103,11 +103,27 @@ public class CustomerUI {
         System.out.println("대기 번호 : " + w.getWaitingNumber());
         System.out.println("내 순서  : " + currentPosition + "번째");
         System.out.println("인원수   : " + w.getPeopleCount() + "명");
-        System.out.println("상태     : " + w.getStatus());
+        System.out.println("안내     : " + buildWaitingGuideMessage(w.getStatus(), currentPosition));
         System.out.println("등록 시각 : " + w.getCreatedAt());
         System.out.println("주문내역 : " + (orderSummaries.isEmpty() ? "없음" : String.join(", ", orderSummaries)));
         System.out.println("--------------------");
     }
+}
+
+private String buildWaitingGuideMessage(String status, int currentPosition) {
+    if (WaitingStatus.CALLED.equals(status)) {
+        return "지금 입장해주세요!";
+    }
+
+    if (WaitingStatus.WAITING.equals(status) && currentPosition <= 3) {
+        return "곧 입장 순서입니다. 가게 앞에서 대기해주세요!";
+    }
+
+    if (WaitingStatus.WAITING.equals(status)) {
+        return "현재 대기 중입니다.";
+    }
+
+    return "현재 상태를 확인해주세요.";
 }
 
 private void cancelMyWaiting(Customer customer) {
@@ -170,7 +186,7 @@ private void cancelMyWaiting(Customer customer) {
 }
 
 
-    private void showMainMenu(Customer customer) {
+    private boolean showMainMenu(Customer customer) {
         while (true) {
             System.out.println("""
                 
@@ -198,8 +214,8 @@ private void cancelMyWaiting(Customer customer) {
                     break;   
 
                 case "4":
-                    System.out.println("고객 메뉴를 종료합니다.");
-                    return;
+                    System.out.println("프로그램을 종료합니다.");
+                    return false;
                 default:
                     System.out.println("올바른 메뉴 번호를 입력해주세요.");
             }
