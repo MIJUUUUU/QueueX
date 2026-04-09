@@ -86,9 +86,16 @@ public class CustomerUI {
 
 
     private boolean showMyWaiting(Customer customer) {
+        String lastSnapshot = null;
+
         while (true) {
             List<Waiting> waitingList = waitingService.getWaitingByCustomerId(customer.getCustomerId());
-            renderWaitingDashboard(waitingList);
+            String currentSnapshot = buildWaitingSnapshot(waitingList);
+
+            if (!currentSnapshot.equals(lastSnapshot)) {
+                renderWaitingDashboard(waitingList);
+                lastSnapshot = currentSnapshot;
+            }
 
             String input = waitForDashboardInput();
 
@@ -99,6 +106,7 @@ public class CustomerUI {
             switch (input) {
                 case "1":
                     cancelMyWaiting(customer);
+                    lastSnapshot = null;
                     break;
                 case "2":
                     return true;
@@ -112,51 +120,66 @@ public class CustomerUI {
         }
     }
 
-private String buildWaitingGuideMessage(String status, int currentPosition) {
-    if (WaitingStatus.CALLED.equals(status)) {
-        return "지금 입장해주세요!";
-    }
-
-    if (WaitingStatus.WAITING.equals(status) && currentPosition <= 3) {
-        return "곧 입장 순서입니다. 가게 앞에서 대기해주세요!";
-    }
-
-    if (WaitingStatus.WAITING.equals(status)) {
-        return "현재 대기 중입니다.";
-    }
-
-    return "현재 상태를 확인해주세요.";
-}
-
-private void renderWaitingDashboard(List<Waiting> waitingList) {
-    clearConsole();
-    System.out.println("=== 내 대기 현황 ===");
-
-    if (waitingList.isEmpty()) {
-        System.out.println("현재 등록된 대기가 없습니다.");
-    } else {
-        for (Waiting w : waitingList) {
-            Store store = waitingService.getStoreById(w.getStoreId());
-            String storeName = store != null ? store.getStoreName() : "알 수 없음";
-            List<String> orderSummaries = waitingService.getOrderSummariesByWaitingId(w.getWaitingId());
-            int currentPosition = waitingService.getCurrentPosition(w.getStoreId(), w.getWaitingNumber());
-
-            System.out.println("가게명   : " + storeName);
-            System.out.println("대기 번호 : " + w.getWaitingNumber());
-            System.out.println("내 순서  : " + currentPosition + "번째");
-            System.out.println("인원수   : " + w.getPeopleCount() + "명");
-            System.out.println("안내     : " + buildWaitingGuideMessage(w.getStatus(), currentPosition));
-            System.out.println("등록 시각 : " + w.getCreatedAt());
-            System.out.println("주문내역 : " + (orderSummaries.isEmpty() ? "없음" : String.join(", ", orderSummaries)));
-            System.out.println("--------------------");
+    private String buildWaitingGuideMessage(String status, int currentPosition) {
+        if (WaitingStatus.CALLED.equals(status)) {
+            return "지금 입장해주세요!";
         }
+
+        if (WaitingStatus.WAITING.equals(status) && currentPosition <= 3) {
+            return "곧 입장 순서입니다. 가게 앞에서 대기해주세요!";
+        }
+
+        if (WaitingStatus.WAITING.equals(status)) {
+            return "현재 대기 중입니다.";
+        }
+
+        return "현재 상태를 확인해주세요.";
     }
 
-    System.out.println("1. 대기 취소");
-    System.out.println("2. 메뉴로 이동");
-    System.out.println("3. 종료");
-    System.out.print("선택 >> ");
-}
+    private String buildWaitingSnapshot(List<Waiting> waitingList) {
+        if (waitingList.isEmpty()) {
+            return "EMPTY";
+        }
+
+        StringBuilder snapshot = new StringBuilder();
+        for (Waiting w : waitingList) {
+            int currentPosition = waitingService.getCurrentPosition(w.getStoreId(), w.getWaitingNumber());
+            snapshot.append(w.getWaitingId()).append("|")
+                .append(w.getStatus()).append("|")
+                .append(currentPosition).append(";");
+        }
+        return snapshot.toString();
+    }
+
+    private void renderWaitingDashboard(List<Waiting> waitingList) {
+        clearConsole();
+        System.out.println("=== 내 대기 현황 ===");
+
+        if (waitingList.isEmpty()) {
+            System.out.println("현재 등록된 대기가 없습니다.");
+        } else {
+            for (Waiting w : waitingList) {
+                Store store = waitingService.getStoreById(w.getStoreId());
+                String storeName = store != null ? store.getStoreName() : "알 수 없음";
+                List<String> orderSummaries = waitingService.getOrderSummariesByWaitingId(w.getWaitingId());
+                int currentPosition = waitingService.getCurrentPosition(w.getStoreId(), w.getWaitingNumber());
+
+                System.out.println("가게명   : " + storeName);
+                System.out.println("대기 번호 : " + w.getWaitingNumber());
+                System.out.println("내 순서  : " + currentPosition + "번째");
+                System.out.println("인원수   : " + w.getPeopleCount() + "명");
+                System.out.println("안내     : " + buildWaitingGuideMessage(w.getStatus(), currentPosition));
+                System.out.println("등록 시각 : " + w.getCreatedAt());
+                System.out.println("주문내역 : " + (orderSummaries.isEmpty() ? "없음" : String.join(", ", orderSummaries)));
+                System.out.println("--------------------");
+            }
+        }
+
+        System.out.println("1. 대기 취소");
+        System.out.println("2. 메뉴로 이동");
+        System.out.println("3. 종료");
+        System.out.print("선택 >> ");
+    }
 
 private String waitForDashboardInput() {
     long deadline = System.currentTimeMillis() + 3000;

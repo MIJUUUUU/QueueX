@@ -23,6 +23,10 @@ public class WaitingService {
         return storeDAO.getAllStores();
     }
 
+    public boolean hasActiveWaitingAtStore(int customerId, int storeId) {
+        return waitingDAO.hasActiveWaitingAtStore(customerId, storeId);
+    }
+
     public Store getStoreById(int storeId) {
         return storeDAO.findById(storeId);
     }

@@ -13,6 +13,33 @@ import java.util.List;
 
 public class WaitingDAO {
 
+    public boolean hasActiveWaitingAtStore(int customerId, int storeId) {
+        String sql = """
+            SELECT COUNT(*)
+            FROM waiting
+            WHERE customer_id = ?
+              AND store_id = ?
+              AND status IN ('WAITING', 'CALLED')
+            """;
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, customerId);
+            pstmt.setInt(2, storeId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     // 해당 가게의 다음 대기 번호 계산
     public int getNextWaitingNumber(int storeId) {
         String sql = "SELECT COALESCE(MAX(waiting_number), 0) + 1 FROM waiting WHERE store_id = ?";
