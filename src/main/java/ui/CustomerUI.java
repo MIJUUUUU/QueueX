@@ -70,7 +70,7 @@ public class CustomerUI {
 
             Customer customer = customerService.login(phone, password);
             if (customer != null) {
-                System.out.println("\n로그인 성공! 어서오세요.");
+                System.out.println("\n고객 로그인에 성공했습니다.");
                 return customer;
             }
 
@@ -188,15 +188,12 @@ private void cancelMyWaiting(Customer customer) {
                 case "1":
                     waitingRegisterUI.handle(customer);
                     break;
-                
                 case "2":
-                      showMyWaiting(customer);
-                   break;
-                
+                    showMyWaiting(customer);
+                    break;
                 case "3":
-                        cancelMyWaiting(customer);
+                    cancelMyWaiting(customer);
                     break;   
-
                 case "4":
                     System.out.println("고객 메뉴를 종료합니다.");
                     return;
