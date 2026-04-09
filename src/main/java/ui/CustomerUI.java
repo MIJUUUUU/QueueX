@@ -251,17 +251,20 @@ private void cancelMyWaiting(Customer customer) {
     int index = selectedNumber - 1;
     Waiting selected = waitingList.get(index);
 
-    System.out.print("대기 번호 " + selected.getWaitingNumber() + "번을 정말 취소하시겠습니까? (Y/N) >> ");
-    String confirm = scanner.nextLine().trim().toUpperCase();
+    while (true) {
+        System.out.print("대기 번호 " + selected.getWaitingNumber() + "번을 정말 취소하시겠습니까? (Y/N) >> ");
+        String confirm = scanner.nextLine().trim().toUpperCase();
 
-    if ("N".equals(confirm)) {
-        System.out.println("대기 취소를 취소했습니다.");
-        return;
-    }
+        if ("N".equals(confirm)) {
+            System.out.println("대기 취소를 취소했습니다.");
+            return;
+        }
 
-    if (!"Y".equals(confirm)) {
-        System.out.println("올바른 입력이 아닙니다. 취소를 진행하지 않습니다.");
-        return;
+        if ("Y".equals(confirm)) {
+            break;
+        }
+
+        System.out.println("Y 또는 N을 입력해주세요.");
     }
 
     boolean result = waitingService.cancelWaiting(selected.getWaitingId(), customer.getCustomerId());
