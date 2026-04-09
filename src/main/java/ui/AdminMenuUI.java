@@ -32,10 +32,12 @@ public class AdminMenuUI {
 
       switch (input) {
         case "1":
+          clearConsole();
           System.out.println(ConsoleStyle.info("가게 선택 및 운영 화면으로 이동합니다."));
           adminStoreUI.manageStore(admin);
           break;
         case "2":
+          clearConsole();
           System.out.println(ConsoleStyle.info("통계 조회 화면으로 이동합니다."));
           adminStatsUI.showStatistics(admin);
           break;
@@ -46,5 +48,10 @@ public class AdminMenuUI {
           System.out.println(ConsoleStyle.error("잘못된 입력입니다. 다시 입력해주세요."));
       }
     }
+  }
+
+  private void clearConsole() {
+    System.out.print("\033[2J\033[3J\033[H");
+    System.out.flush();
   }
 }

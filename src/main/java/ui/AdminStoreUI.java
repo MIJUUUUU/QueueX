@@ -28,18 +28,21 @@ public class AdminStoreUI {
     }
 
     while (true) {
-      System.out.println();
+      clearConsole();
       System.out.println(ConsoleStyle.divider());
       System.out.println(ConsoleStyle.title("선택 가능한 가게 목록"));
       System.out.println(ConsoleStyle.divider());
-      System.out.printf("%-4s %-20s%n", "번호", "가게명");
-      System.out.println("----------------------------");
+      System.out.println(ConsoleStyle.padRight("번호", 6) + ConsoleStyle.padRight("가게명", 20));
+      System.out.println("--------------------------------");
 
       for (int i = 0; i < stores.size(); i++) {
         Store store = stores.get(i);
-        System.out.printf("%-4d %-20s%n", i + 1, store.getStoreName());
+        System.out.println(
+            ConsoleStyle.padRight(String.valueOf(i + 1), 6)
+                + ConsoleStyle.padRight(store.getStoreName(), 20)
+        );
       }
-      System.out.println("----------------------------");
+      System.out.println("--------------------------------");
 
       System.out.println("0. 뒤로 가기");
       System.out.print("선택 >> ");
@@ -63,9 +66,15 @@ public class AdminStoreUI {
 
       // 선택한 가게 운영 화면으로 진입.
       Store selectedStore = stores.get(selected - 1);
+      clearConsole();
       System.out.println(ConsoleStyle.info(selectedStore.getStoreName() + " 운영 화면으로 이동합니다."));
       adminSeatUI.startSeatFlow(selectedStore);
       return;
     }
+  }
+
+  private void clearConsole() {
+    System.out.print("\033[2J\033[3J\033[H");
+    System.out.flush();
   }
 }

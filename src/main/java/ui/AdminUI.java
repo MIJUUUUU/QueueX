@@ -40,7 +40,7 @@ public class AdminUI {
       Admin admin = adminService.adminLogin(inputCode);
 
       if (admin != null) {
-        System.out.println();
+        clearConsole();
         System.out.println(ConsoleStyle.success("관리자 로그인에 성공했습니다."));
         return admin;
       }
@@ -61,6 +61,11 @@ public class AdminUI {
     }
 
     return null;
+  }
+
+  private void clearConsole() {
+    System.out.print("\033[2J\033[3J\033[H");
+    System.out.flush();
   }
 
 }

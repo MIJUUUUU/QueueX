@@ -22,7 +22,7 @@ public class AdminSeatUI {
   // 수용 인원 기준 운영 시스템 시작
   public void startSeatFlow(Store store) {
     while (true) {
-      System.out.println();
+      clearConsole();
       System.out.println(ConsoleStyle.divider());
       System.out.println(ConsoleStyle.title(store.getStoreName() + " 운영"));
       System.out.println(ConsoleStyle.divider());
@@ -205,5 +205,10 @@ public class AdminSeatUI {
 
       System.out.println("잘못된 입력입니다. 다시 입력해주세요.");
     }
+  }
+
+  private void clearConsole() {
+    System.out.print("\033[2J\033[3J\033[H");
+    System.out.flush();
   }
 }

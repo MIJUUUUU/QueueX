@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,6 +85,7 @@ public class WaitingDAO {
                     waiting.setWaitingNumber(waitingNumber);
                     waiting.setPeopleCount(peopleCount);
                     waiting.setStatus(WaitingStatus.WAITING);
+                    waiting.setCreatedAt(LocalDateTime.now());
                     return waiting;
                 }
             }

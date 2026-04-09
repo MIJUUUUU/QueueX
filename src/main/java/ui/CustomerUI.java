@@ -84,7 +84,7 @@ public class CustomerUI {
 
                 Customer customer = customerService.login(phone, password);
                 if (customer != null) {
-                    System.out.println();
+                    clearConsole();
                     System.out.println(ConsoleStyle.success("고객 로그인에 성공했습니다."));
                     return customer;
                 }
@@ -118,9 +118,11 @@ public class CustomerUI {
 
             switch (input) {
                 case "1":
+                    System.out.println();
                     waitingRegisterUI.handle(customer);
                     break;
                 case "2":
+                    System.out.println();
                     if (!showMyWaiting(customer)) {
                         return false;
                     }
@@ -164,6 +166,7 @@ public class CustomerUI {
                 case "2":
                     if (!hasWaiting) {
                         System.out.println(ConsoleStyle.error("올바른 메뉴 번호를 입력해주세요."));
+                        drainPendingInput();
                         sleepSilently(1200);
                         break;
                     }
@@ -173,6 +176,7 @@ public class CustomerUI {
                     return false;
                 default:
                     System.out.println(ConsoleStyle.error("올바른 메뉴 번호를 입력해주세요."));
+                    drainPendingInput();
                     sleepSilently(1200);
             }
         }
@@ -203,15 +207,32 @@ public class CustomerUI {
 
                 System.out.println();
                 System.out.println(ConsoleStyle.highlight("[" + storeName + "]"));
-                System.out.println(
-                    w.getWaitingNumber() + "번"
-                        + " | " + currentPosition + "번째"
-                        + " | " + w.getPeopleCount() + "명"
-                        + " | " + formatDateTime(w.getCreatedAt())
-                );
-                System.out.println("안내: " + buildWaitingGuideMessage(w.getStatus(), currentPosition));
-                System.out.println("주문: " + (orderSummaries.isEmpty() ? "없음" : String.join(", ", orderSummaries)));
-                System.out.println("----------------------------------------");
+                System.out.println("┌──────────────────────────────────────┐");
+                System.out.println("│ " + ConsoleStyle.padRight(
+                    "대기번호: " + w.getWaitingNumber() + "번",
+                    37
+                ) + "│");
+                System.out.println("│ " + ConsoleStyle.padRight(
+                    "순서: " + currentPosition + "번째",
+                    37
+                ) + "│");
+                System.out.println("│ " + ConsoleStyle.padRight(
+                    "인원수: " + w.getPeopleCount() + "명",
+                    37
+                ) + "│");
+                System.out.println("│ " + ConsoleStyle.padRight(
+                    "등록시각: " + formatDateTime(w.getCreatedAt()),
+                    37
+                ) + "│");
+                System.out.println("│ " + ConsoleStyle.padRight(
+                    "안내: " + stripAnsi(buildWaitingGuideMessage(w.getStatus(), currentPosition)),
+                    37
+                ) + "│");
+                System.out.println("│ " + ConsoleStyle.padRight(
+                    "주문: " + (orderSummaries.isEmpty() ? "없음" : String.join(", ", orderSummaries)),
+                    37
+                ) + "│");
+                System.out.println("└──────────────────────────────────────┘");
             }
             System.out.println();
             System.out.println(ConsoleStyle.divider());
@@ -241,6 +262,10 @@ public class CustomerUI {
         }
 
         return ConsoleStyle.warning("현재 상태를 확인해주세요.");
+    }
+
+    private String stripAnsi(String text) {
+        return text.replaceAll("\u001B\\[[;\\d]*m", "");
     }
 
     private String buildWaitingSnapshot(List<Waiting> waitingList) {
@@ -278,6 +303,15 @@ public class CustomerUI {
         return "";
     }
 
+    private void drainPendingInput() {
+        try {
+            while (System.in.available() > 0) {
+                System.in.read();
+            }
+        } catch (IOException ignored) {
+        }
+    }
+
     private void cancelMyWaiting(Customer customer) {
         List<Waiting> waitingList = waitingService.getWaitingByCustomerId(customer.getCustomerId());
 
@@ -290,19 +324,26 @@ public class CustomerUI {
         System.out.println(ConsoleStyle.divider());
         System.out.println(ConsoleStyle.title("취소할 대기 선택"));
         System.out.println(ConsoleStyle.divider());
-        System.out.printf("%-4s %-8s %-8s %-18s%n", "번호", "대기번호", "인원수", "등록 시각");
-        System.out.println("----------------------------------------");
         for (int i = 0; i < waitingList.size(); i++) {
             Waiting w = waitingList.get(i);
-            System.out.printf(
-                "%-4d %-8d %-8s %-18s%n",
-                i + 1,
-                w.getWaitingNumber(),
-                w.getPeopleCount() + "명",
-                formatDateTime(w.getCreatedAt())
-            );
+            Store store = waitingService.getStoreById(w.getStoreId());
+            String storeName = store != null ? store.getStoreName() : "알 수 없음";
+            List<String> orderSummaries = waitingService.getOrderSummariesByWaitingId(w.getWaitingId());
+            int currentPosition = waitingService.getCurrentPosition(w.getStoreId(), w.getWaitingNumber());
+
+            System.out.println();
+            System.out.println(ConsoleStyle.highlight("[" + (i + 1) + "] " + storeName));
+            System.out.println("┌──────────────────────────────────────┐");
+            System.out.println("│ " + ConsoleStyle.padRight("대기번호: " + w.getWaitingNumber() + "번", 37) + "│");
+            System.out.println("│ " + ConsoleStyle.padRight("순서: " + currentPosition + "번째", 37) + "│");
+            System.out.println("│ " + ConsoleStyle.padRight("인원수: " + w.getPeopleCount() + "명", 37) + "│");
+            System.out.println("│ " + ConsoleStyle.padRight("등록시각: " + formatDateTime(w.getCreatedAt()), 37) + "│");
+            System.out.println("│ " + ConsoleStyle.padRight("안내: " + stripAnsi(buildWaitingGuideMessage(w.getStatus(), currentPosition)), 37) + "│");
+            System.out.println("│ " + ConsoleStyle.padRight("주문: " + (orderSummaries.isEmpty() ? "없음" : String.join(", ", orderSummaries)), 37) + "│");
+            System.out.println("└──────────────────────────────────────┘");
         }
-        System.out.println("----------------------------------------");
+        System.out.println();
+        System.out.println(ConsoleStyle.divider());
         System.out.println("0. 취소 없이 돌아가기");
         System.out.print("선택 >> ");
 
@@ -323,9 +364,11 @@ public class CustomerUI {
         }
 
         Waiting selected = waitingList.get(selectedNumber - 1);
+        Store selectedStore = waitingService.getStoreById(selected.getStoreId());
+        String selectedStoreName = selectedStore != null ? selectedStore.getStoreName() : "알 수 없음";
 
         while (true) {
-            System.out.print("대기 번호 " + selected.getWaitingNumber() + "번을 정말 취소하시겠습니까? (Y/N) >> ");
+            System.out.print(selectedStoreName + " 대기 " + selected.getWaitingNumber() + "번을 정말 취소하시겠습니까? (Y/N) >> ");
             String confirm = scanner.nextLine().trim().toUpperCase();
 
             if ("N".equals(confirm)) {
@@ -349,7 +392,7 @@ public class CustomerUI {
     }
 
     private void clearConsole() {
-        System.out.print("\033[H\033[2J");
+        System.out.print("\033[2J\033[3J\033[H");
         System.out.flush();
     }
 

@@ -77,7 +77,7 @@ public class AdminStatsUI {
       System.out.println("총 방문 고객 수: " + statistics.getTotalVisitedCustomers() + "명");
       System.out.println("총 웨이팅 수: " + statistics.getTotalWaitingCount() + "건");
       System.out.println();
-      System.out.println(ConsoleStyle.title("메뉴 통계"));
+      System.out.println(ConsoleStyle.title("----------- 메뉴 통계 -----------"));
       if (statistics.getMenuStats().isEmpty()) {
         System.out.println("주문 내역이 없습니다.");
       } else {
@@ -89,7 +89,7 @@ public class AdminStatsUI {
         System.out.println("------------------------------");
       }
       System.out.println();
-      System.out.println(ConsoleStyle.title("노쇼"));
+      System.out.println(ConsoleStyle.title("------------- 노쇼 -------------"));
       System.out.println("노쇼 건수: " + statistics.getNoShowCount() + "건");
       System.out.println();
       System.out.println("0. 뒤로가기");
