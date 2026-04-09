@@ -1,5 +1,6 @@
 package ui;
 
+import common.ConsoleStyle;
 import dto.Admin;
 
 import java.util.Scanner;
@@ -17,32 +18,32 @@ public class AdminMenuUI {
 
   public void showAdminMenu(Admin admin) {
     while (true) {
-      System.out.println("""
-                [관리자 메뉴]
-
-                1. 가게 선택 및 운영 시작
-                2. 통계 조회
-                0. 로그아웃
-
-                선택 >>
-                """);
+      System.out.println();
+      System.out.println(ConsoleStyle.divider());
+      System.out.println(ConsoleStyle.title("관리자 메뉴"));
+      System.out.println(ConsoleStyle.divider());
+      System.out.println("1. 가게 선택 및 운영");
+      System.out.println("2. 통계 조회");
+      System.out.println("0. 로그아웃");
+      System.out.println(ConsoleStyle.divider());
+      System.out.print("선택 >> ");
 
       String input = s.nextLine().trim();
 
       switch (input) {
         case "1":
-          System.out.println("가게 선택 및 운영 화면으로 이동합니다.");
+          System.out.println(ConsoleStyle.info("가게 선택 및 운영 화면으로 이동합니다."));
           adminStoreUI.manageStore(admin);
           break;
         case "2":
-          System.out.println("통계 조회 화면으로 이동합니다.");
+          System.out.println(ConsoleStyle.info("통계 조회 화면으로 이동합니다."));
           adminStatsUI.showStatistics(admin);
           break;
         case "0":
-          System.out.println("로그아웃합니다.");
+          System.out.println(ConsoleStyle.info("로그아웃합니다."));
           return;
         default:
-          System.out.println("잘못된 입력입니다. 다시 입력해주세요.");
+          System.out.println(ConsoleStyle.error("잘못된 입력입니다. 다시 입력해주세요."));
       }
     }
   }

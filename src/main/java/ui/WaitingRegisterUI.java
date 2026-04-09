@@ -1,5 +1,6 @@
 package ui;
 
+import common.ConsoleStyle;
 import common.ValidationUtil;
 import dto.Customer;
 import dto.Menu;
@@ -7,6 +8,8 @@ import dto.Store;
 import dto.Waiting;
 import service.WaitingService;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +19,7 @@ public class WaitingRegisterUI {
 
     private final Scanner scanner;
     private final WaitingService waitingService = new WaitingService();
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public WaitingRegisterUI(Scanner scanner) {
         this.scanner = scanner;
@@ -25,11 +29,14 @@ public class WaitingRegisterUI {
         while (true) {
             List<Store> stores = waitingService.getAllStores();
             if (stores.isEmpty()) {
-                System.out.println("등록된 가게가 없습니다.");
+                System.out.println(ConsoleStyle.warning("등록된 가게가 없습니다."));
                 return;
             }
 
-            System.out.println("\n=== 가게 목록 ===");
+            System.out.println();
+            System.out.println(ConsoleStyle.divider());
+            System.out.println(ConsoleStyle.title("가게 목록"));
+            System.out.println(ConsoleStyle.divider());
             for (int i = 0; i < stores.size(); i++) {
                 Store s = stores.get(i);
                 System.out.println((i + 1) + ". " + s.getStoreName() + " [" + s.getCategory() + "]");
@@ -43,13 +50,13 @@ public class WaitingRegisterUI {
             }
 
             if (!ValidationUtil.isPositiveInteger(storeInput)) {
-                System.out.println("올바른 번호를 입력하세요.");
+                System.out.println(ConsoleStyle.error("올바른 번호를 입력하세요."));
                 continue;
             }
 
             int selectedStoreNumber = Integer.parseInt(storeInput);
             if (!ValidationUtil.isInRange(selectedStoreNumber, 1, stores.size())) {
-                System.out.println("올바른 번호를 입력하세요.");
+                System.out.println(ConsoleStyle.error("올바른 번호를 입력하세요."));
                 continue;
             }
 
@@ -57,8 +64,8 @@ public class WaitingRegisterUI {
             Store selectedStore = stores.get(storeIndex);
 
             if (waitingService.hasActiveWaitingAtStore(customer.getCustomerId(), selectedStore.getStoreId())) {
-                System.out.println(selectedStore.getStoreName() + "에는 이미 진행 중인 대기가 있습니다.");
-                System.out.println("현재 대기 현황에서 확인하거나 취소 후 다시 등록해주세요.");
+                System.out.println(ConsoleStyle.warning(selectedStore.getStoreName() + "에는 이미 진행 중인 대기가 있습니다."));
+                System.out.println(ConsoleStyle.info("현재 대기 현황에서 확인하거나 취소 후 다시 등록해주세요."));
                 continue;
             }
 
@@ -67,7 +74,10 @@ public class WaitingRegisterUI {
             boolean backToStoreSelection = false;
 
             if (!menus.isEmpty()) {
-                System.out.println("\n=== " + selectedStore.getStoreName() + " 메뉴 ===");
+                System.out.println();
+                System.out.println(ConsoleStyle.divider());
+                System.out.println(ConsoleStyle.title(selectedStore.getStoreName() + " 메뉴"));
+                System.out.println(ConsoleStyle.divider());
                 for (int i = 0; i < menus.size(); i++) {
                     Menu m = menus.get(i);
                     System.out.println((i + 1) + ". " + m.getMenuName() + " - " + m.getPrice() + "원");
@@ -86,7 +96,7 @@ public class WaitingRegisterUI {
 
                     if (line.equals("0")) {
                         if (selectedMenus.isEmpty()) {
-                            System.out.println("메뉴를 1개 이상 선택해야 합니다. 가게 선택으로 돌아가려면 B를 입력하세요.");
+                            System.out.println(ConsoleStyle.warning("메뉴를 1개 이상 선택해야 합니다. 가게 선택으로 돌아가려면 B를 입력하세요."));
                             continue;
                         }
                         break;
@@ -94,12 +104,12 @@ public class WaitingRegisterUI {
 
                     String[] parts = line.split("\\s+");
                     if (parts.length != 2) {
-                        System.out.println("형식이 올바르지 않습니다. 예) 1 2");
+                        System.out.println(ConsoleStyle.error("형식이 올바르지 않습니다. 예) 1 2"));
                         continue;
                     }
 
                     if (!ValidationUtil.isPositiveInteger(parts[0]) || !ValidationUtil.isPositiveInteger(parts[1])) {
-                        System.out.println("올바른 번호를 입력하세요.");
+                        System.out.println(ConsoleStyle.error("올바른 번호를 입력하세요."));
                         continue;
                     }
 
@@ -107,14 +117,14 @@ public class WaitingRegisterUI {
                     int quantity = Integer.parseInt(parts[1]);
 
                     if (!ValidationUtil.isInRange(menuNumber, 1, menus.size())) {
-                        System.out.println("올바른 번호를 입력하세요.");
+                        System.out.println(ConsoleStyle.error("올바른 번호를 입력하세요."));
                         continue;
                     }
 
                     int menuIndex = menuNumber - 1;
                     Menu selected = menus.get(menuIndex);
                     selectedMenus.put(selected.getMenuId(), quantity);
-                    System.out.println(selected.getMenuName() + " " + quantity + "개 추가됨.");
+                    System.out.println(ConsoleStyle.success(selected.getMenuName() + " " + quantity + "개 추가됨."));
                 }
             }
 
@@ -122,14 +132,28 @@ public class WaitingRegisterUI {
                 continue;
             }
 
-            System.out.print("\n인원수를 입력하세요: ");
-            String peopleInput = scanner.nextLine().trim();
-            if (!ValidationUtil.isPositiveInteger(peopleInput)) {
-                System.out.println("올바른 인원수를 입력하세요.");
-                return;
+            int peopleCount = 0;
+            while (true) {
+                System.out.print("\n인원수를 입력하세요 (가게 선택으로 돌아가려면 0 입력): ");
+                String peopleInput = scanner.nextLine().trim();
+
+                if ("0".equals(peopleInput)) {
+                    backToStoreSelection = true;
+                    break;
+                }
+
+                if (!ValidationUtil.isPositiveInteger(peopleInput)) {
+                    System.out.println(ConsoleStyle.error("올바른 인원수를 입력하세요."));
+                    continue;
+                }
+
+                peopleCount = Integer.parseInt(peopleInput);
+                break;
             }
 
-            int peopleCount = Integer.parseInt(peopleInput);
+            if (backToStoreSelection) {
+                continue;
+            }
 
             Waiting waiting = waitingService.registerWaiting(
                 customer.getCustomerId(),
@@ -139,11 +163,15 @@ public class WaitingRegisterUI {
             );
 
             if (waiting != null) {
-                System.out.println("\n대기 등록이 완료되었습니다.");
-                System.out.println("가게: " + selectedStore.getStoreName());
-                System.out.println("대기 번호: " + waiting.getWaitingNumber());
-                System.out.println("인원수: " + waiting.getPeopleCount() + "명");
-                System.out.println("주문내역:");
+                System.out.println();
+                System.out.println(ConsoleStyle.divider());
+                System.out.println(ConsoleStyle.success("대기 등록이 완료되었습니다."));
+                System.out.println(ConsoleStyle.divider());
+                System.out.println("가게      : " + selectedStore.getStoreName());
+                System.out.println("대기 번호 : " + waiting.getWaitingNumber());
+                System.out.println("인원수    : " + waiting.getPeopleCount() + "명");
+                System.out.println("등록 시각 : " + formatDateTime(waiting.getCreatedAt()));
+                System.out.println("주문내역  :");
 
                 if (selectedMenus.isEmpty()) {
                     System.out.println("- 없음");
@@ -163,9 +191,16 @@ public class WaitingRegisterUI {
                     }
                 }
             } else {
-                System.out.println("대기 등록에 실패했습니다. 다시 시도해주세요.");
+                System.out.println(ConsoleStyle.error("대기 등록에 실패했습니다. 다시 시도해주세요."));
             }
             return;
         }
+    }
+
+    private String formatDateTime(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return "-";
+        }
+        return dateTime.format(DATE_TIME_FORMATTER);
     }
 }

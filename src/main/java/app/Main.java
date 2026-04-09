@@ -1,5 +1,6 @@
 package app;
 
+import common.ConsoleStyle;
 import common.DBUtil;
 import ui.AdminUI;
 import ui.CustomerUI;
@@ -24,13 +25,15 @@ public class Main {
         AdminUI adminUI = new AdminUI(scanner);
 
         while (true) {
-            System.out.println("""
-                [사용자 유형 선택]
-                1. 고객
-                2. 관리자
-                3. 종료
-                선택 >>
-                """);
+            System.out.println();
+            System.out.println(ConsoleStyle.divider());
+            System.out.println(ConsoleStyle.title("사용자 유형 선택"));
+            System.out.println(ConsoleStyle.divider());
+            System.out.println("1. 고객");
+            System.out.println("2. 관리자");
+            System.out.println("3. 종료");
+            System.out.println(ConsoleStyle.divider());
+            System.out.print("선택 >> ");
 
             String input = scanner.nextLine().trim();
 

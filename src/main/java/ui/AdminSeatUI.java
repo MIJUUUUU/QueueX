@@ -1,5 +1,6 @@
 package ui;
 
+import common.ConsoleStyle;
 import common.ValidationUtil;
 import dto.Store;
 import dto.Waiting;
@@ -18,15 +19,18 @@ public class AdminSeatUI {
     this.s = scanner;
   }
 
-  // 좌석 운영 시스템 시작
+  // 수용 인원 기준 운영 시스템 시작
   public void startSeatFlow(Store store) {
     while (true) {
-      System.out.println("\n=== " + store.getStoreName() + " 좌석 운영 ===");
+      System.out.println();
+      System.out.println(ConsoleStyle.divider());
+      System.out.println(ConsoleStyle.title(store.getStoreName() + " 운영"));
+      System.out.println(ConsoleStyle.divider());
       System.out.print("수용 인원 입력 >> ");
       String input = s.nextLine().trim();
 
       if (!ValidationUtil.isPositiveInteger(input)) {
-        System.out.println("잘못된 입력입니다. 숫자를 입력해주세요.");
+        System.out.println(ConsoleStyle.error("잘못된 입력입니다. 숫자를 입력해주세요."));
         continue;
       }
 
@@ -51,7 +55,10 @@ public class AdminSeatUI {
         return handleNoRecommendation(waitingList, seatCount);
       }
 
-      System.out.println("\n===== 추천 순위 =====");
+      System.out.println();
+      System.out.println(ConsoleStyle.divider());
+      System.out.println(ConsoleStyle.title("추천 순위"));
+      System.out.println(ConsoleStyle.divider());
       for (Waiting waiting : recommendedList) {
         System.out.println("대기 " + waiting.getWaitingNumber() + "번 / " + waiting.getPeopleCount() + "명");
       }
@@ -59,6 +66,9 @@ public class AdminSeatUI {
       Waiting target = recommendedList.get(0);
 
       System.out.println();
+      System.out.println(ConsoleStyle.divider());
+      System.out.println(ConsoleStyle.info("우선 호출 대상"));
+      System.out.println(ConsoleStyle.divider());
       System.out.println("다음 손님을 호출할까요? [대기 " + target.getWaitingNumber() + "번 / " + target.getPeopleCount() + "명]");
       System.out.println("1. 호출");
       System.out.println("0. 취소");
@@ -71,18 +81,19 @@ public class AdminSeatUI {
       }
 
       if (!"1".equals(select)) {
-        System.out.println("잘못된 입력입니다. 다시 시도해주세요.");
+        System.out.println(ConsoleStyle.error("잘못된 입력입니다. 다시 시도해주세요."));
         continue;
       }
 
       boolean called = waitingService.callWaiting(target.getWaitingId());
 
       if (!called) {
-        System.out.println("호출 처리에 실패했습니다.");
+        System.out.println(ConsoleStyle.error("호출 처리에 실패했습니다."));
         return true;
       }
 
-      System.out.println("호출이 완료되었습니다.");
+      System.out.println();
+      System.out.println(ConsoleStyle.success("호출이 완료되었습니다."));
 
       if (!handleCalledWaiting(target)) {
         return true;
@@ -95,7 +106,10 @@ public class AdminSeatUI {
   // 현재 호출된 손님에 대해 입장/노쇼/뒤로가기 선택 처리
   private boolean handleCalledWaiting(Waiting waiting) {
     while (true) {
-      System.out.println("===== 현재 호출 =====");
+      System.out.println();
+      System.out.println(ConsoleStyle.divider());
+      System.out.println(ConsoleStyle.title("현재 호출"));
+      System.out.println(ConsoleStyle.divider());
       System.out.println("대기 " + waiting.getWaitingNumber() + "번 / " + waiting.getPeopleCount() + "명");
       System.out.println("1. 입장 처리");
       System.out.println("2. 노쇼 처리");
@@ -107,24 +121,26 @@ public class AdminSeatUI {
       switch (input) {
         case "1":
           if (waitingService.enterWaiting(waiting.getWaitingId())) {
-            System.out.println("입장 처리가 완료되었습니다.");
-            System.out.println("현재 좌석 상황에 맞게 수용 인원을 다시 입력해주세요.");
+            System.out.println();
+            System.out.println(ConsoleStyle.success("입장 처리가 완료되었습니다."));
+            System.out.println(ConsoleStyle.info("현재 좌석 상황에 맞게 수용 인원을 다시 입력해주세요."));
           } else {
-            System.out.println("입장 처리에 실패했습니다.");
+            System.out.println(ConsoleStyle.error("입장 처리에 실패했습니다."));
           }
           return true;
         case "2":
           if (waitingService.noshowWaiting(waiting.getWaitingId())) {
-            System.out.println("노쇼 처리가 완료되었습니다.");
-            System.out.println("현재 좌석 상황에 맞게 수용 인원을 다시 입력해주세요.");
+            System.out.println();
+            System.out.println(ConsoleStyle.success("노쇼 처리가 완료되었습니다."));
+            System.out.println(ConsoleStyle.info("현재 좌석 상황에 맞게 수용 인원을 다시 입력해주세요."));
           } else {
-            System.out.println("노쇼 처리에 실패했습니다.");
+            System.out.println(ConsoleStyle.error("노쇼 처리에 실패했습니다."));
           }
           return true;
         case "0":
           return false;
         default:
-          System.out.println("잘못된 입력입니다. 다시 시도해주세요.");
+          System.out.println(ConsoleStyle.error("잘못된 입력입니다. 다시 시도해주세요."));
       }
     }
   }
@@ -132,8 +148,9 @@ public class AdminSeatUI {
   // 추천 가능한 대기 손님이 없을 때 처리
   private boolean handleEmptyWaiting() {
     while (true) {
-      System.out.println("대기 손님이 없습니다.");
-      System.out.print("관리자 메뉴로 돌아가시겠습니까? (Y : 돌아가기 / N : 좌석 운영 종료) >> ");
+      System.out.println();
+      System.out.println(ConsoleStyle.warning("대기 손님이 없습니다."));
+      System.out.print("관리자 메뉴로 돌아가시겠습니까? (Y : 돌아가기 / N : 운영 종료) >> ");
       String input = s.nextLine().trim().toUpperCase();
 
       if ("Y".equals(input)) {
@@ -142,7 +159,7 @@ public class AdminSeatUI {
       }
 
       if ("N".equals(input)) {
-        System.out.println("좌석 운영을 종료합니다.");
+        System.out.println("운영을 종료합니다.");
         return false;
       }
 
@@ -152,9 +169,10 @@ public class AdminSeatUI {
 
   private boolean handleNoRecommendation(List<Waiting> waitingList, int seatCount) {
     while (true) {
-      System.out.println("수용 인원 " + seatCount + "명 이하의 추천 가능한 대기 손님이 없습니다.");
       System.out.println();
-      System.out.println("[현재 전체 대기 FIFO]");
+      System.out.println(ConsoleStyle.warning("수용 인원 " + seatCount + "명 이하의 추천 가능한 대기 손님이 없습니다."));
+      System.out.println();
+      System.out.println(ConsoleStyle.title("현재 전체 대기 FIFO"));
       for (Waiting waiting : waitingList) {
         System.out.println("대기 " + waiting.getWaitingNumber() + "번 / " + waiting.getPeopleCount() + "명");
       }
