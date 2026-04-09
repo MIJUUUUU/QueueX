@@ -106,7 +106,7 @@ public class AdminSeatUI {
     }
   }
 
-  // 현재 호출된 손님에 대해 입장/노쇼/뒤로가기 선택 처리
+  // 현재 호출된 손님에 대해 입장/노쇼 처리
   private boolean handleCalledWaiting(Waiting waiting) {
     while (true) {
       System.out.println();
@@ -116,7 +116,6 @@ public class AdminSeatUI {
       System.out.println("대기 " + waiting.getWaitingNumber() + "번 / " + waiting.getPeopleCount() + "명");
       System.out.println("1. 입장 처리");
       System.out.println("2. 노쇼 처리");
-      System.out.println("0. 관리자 메뉴");
       System.out.print("선택 >> ");
 
       String input = s.nextLine().trim();
@@ -140,10 +139,8 @@ public class AdminSeatUI {
             System.out.println(ConsoleStyle.error("노쇼 처리에 실패했습니다."));
           }
           return true;
-        case "0":
-          return false;
         default:
-          System.out.println(ConsoleStyle.error("잘못된 입력입니다. 다시 시도해주세요."));
+          System.out.println(ConsoleStyle.error("입장 처리 또는 노쇼 처리만 선택할 수 있습니다."));
       }
     }
   }
