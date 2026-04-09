@@ -31,7 +31,7 @@ public class Main {
             System.out.println(ConsoleStyle.divider());
             System.out.println("1. 고객");
             System.out.println("2. 관리자");
-            System.out.println("3. 종료");
+            System.out.println("0. 종료");
             System.out.println(ConsoleStyle.divider());
             System.out.print("선택 >> ");
 
@@ -46,7 +46,7 @@ public class Main {
                 case "2":
                     adminUI.adminStart();
                     break;
-                case "3":
+                case "0":
                     System.out.println("프로그램을 종료합니다.");
                     return;
                 default:

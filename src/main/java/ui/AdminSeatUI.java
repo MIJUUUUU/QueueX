@@ -59,9 +59,12 @@ public class AdminSeatUI {
       System.out.println(ConsoleStyle.divider());
       System.out.println(ConsoleStyle.title("추천 순위"));
       System.out.println(ConsoleStyle.divider());
+      System.out.printf("%-6s %-8s%n", "대기번호", "인원수");
+      System.out.println("------------------");
       for (Waiting waiting : recommendedList) {
-        System.out.println("대기 " + waiting.getWaitingNumber() + "번 / " + waiting.getPeopleCount() + "명");
+        System.out.printf("%-6s %-8s%n", waiting.getWaitingNumber() + "번", waiting.getPeopleCount() + "명");
       }
+      System.out.println("------------------");
 
       Waiting target = recommendedList.get(0);
 
@@ -173,9 +176,12 @@ public class AdminSeatUI {
       System.out.println(ConsoleStyle.warning("수용 인원 " + seatCount + "명 이하의 추천 가능한 대기 손님이 없습니다."));
       System.out.println();
       System.out.println(ConsoleStyle.title("현재 전체 대기 FIFO"));
+      System.out.printf("%-6s %-8s%n", "대기번호", "인원수");
+      System.out.println("------------------");
       for (Waiting waiting : waitingList) {
-        System.out.println("대기 " + waiting.getWaitingNumber() + "번 / " + waiting.getPeopleCount() + "명");
+        System.out.printf("%-6s %-8s%n", waiting.getWaitingNumber() + "번", waiting.getPeopleCount() + "명");
       }
+      System.out.println("------------------");
       System.out.println();
       System.out.println("1. 수용 인원 다시 입력");
       System.out.println("0. 관리자 메뉴");
