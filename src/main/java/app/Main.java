@@ -23,9 +23,15 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         CustomerUI customerUI = new CustomerUI(scanner);
         AdminUI adminUI = new AdminUI(scanner);
+        String pendingBannerMessage = null;
 
         while (true) {
-            System.out.println();
+            clearConsole();
+            if (pendingBannerMessage != null) {
+                System.out.println(pendingBannerMessage);
+                System.out.println();
+                pendingBannerMessage = null;
+            }
             System.out.println(ConsoleStyle.divider());
             System.out.println(ConsoleStyle.title("사용자 유형 선택"));
             System.out.println(ConsoleStyle.divider());
@@ -44,7 +50,7 @@ public class Main {
                     }
                     break;
                 case "2":
-                    adminUI.adminStart();
+                    pendingBannerMessage = adminUI.adminStart();
                     break;
                 case "0":
                     System.out.println("프로그램을 종료합니다.");
@@ -53,5 +59,10 @@ public class Main {
                     System.out.println("올바른 메뉴 번호를 입력해주세요.");
             }
         }
+    }
+
+    private static void clearConsole() {
+        System.out.print("\033[2J\033[3J\033[H");
+        System.out.flush();
     }
 }

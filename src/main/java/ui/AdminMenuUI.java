@@ -16,7 +16,7 @@ public class AdminMenuUI {
     this.adminStatsUI = new AdminStatsUI(scanner);
   }
 
-  public void showAdminMenu(Admin admin) {
+  public String showAdminMenu(Admin admin) {
     while (true) {
       System.out.println();
       System.out.println(ConsoleStyle.divider());
@@ -42,8 +42,7 @@ public class AdminMenuUI {
           adminStatsUI.showStatistics(admin);
           break;
         case "0":
-          System.out.println(ConsoleStyle.info("로그아웃합니다."));
-          return;
+          return ConsoleStyle.info("로그아웃합니다.");
         default:
           System.out.println(ConsoleStyle.error("잘못된 입력입니다. 다시 입력해주세요."));
       }

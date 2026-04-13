@@ -59,20 +59,48 @@ public class AdminStatsUI {
         continue;
       }
 
-      printStoreStatistics(stores.get(selected - 1));
+      showStatisticsTypeMenu(stores.get(selected - 1));
       return;
     }
   }
 
-  private void printStoreStatistics(Store store) {
-    AdminStatistics statistics = adminService.getTodayStatistics(store);
+  private void showStatisticsTypeMenu(Store store) {
+    while (true) {
+      System.out.println();
+      System.out.println(ConsoleStyle.title("--------[" + store.getStoreName() + " - 통계 조회] --------"));
+      System.out.println();
+      System.out.println("1. 오늘 통계");
+      System.out.println("2. 전체 통계");
+      System.out.println("0. 뒤로 가기");
+      System.out.print("선택 >> ");
 
+      String input = s.nextLine().trim();
+
+      if ("1".equals(input)) {
+        printStoreStatistics(store, "오늘 통계", adminService.getTodayStatistics(store));
+        continue;
+      }
+
+      if ("2".equals(input)) {
+        printStoreStatistics(store, "전체 통계", adminService.getOverallStatistics(store));
+        continue;
+      }
+
+      if ("0".equals(input)) {
+        return;
+      }
+
+      System.out.println(ConsoleStyle.error("잘못된 입력입니다. 메뉴 번호를 다시 입력해주세요."));
+    }
+  }
+
+  private void printStoreStatistics(Store store, String statisticsTitle, AdminStatistics statistics) {
     while (true) {
       System.out.println();
       System.out.println(ConsoleStyle.title("[" + store.getStoreName() + " - 통계 조회]"));
       System.out.println();
       System.out.println(ConsoleStyle.divider());
-      System.out.println(ConsoleStyle.title("오늘 통계"));
+      System.out.println(ConsoleStyle.title(statisticsTitle));
       System.out.println(ConsoleStyle.divider());
       System.out.println("총 방문 고객 수: " + statistics.getTotalVisitedCustomers() + "명");
       System.out.println("총 웨이팅 수: " + statistics.getTotalWaitingCount() + "건");

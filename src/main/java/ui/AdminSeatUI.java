@@ -14,6 +14,7 @@ public class AdminSeatUI {
   private final Scanner s;
   private final WaitingService waitingService = new WaitingService();
   private final RecommendationService recommendationService = new RecommendationService();
+  private String pendingBannerMessage;
 
   public AdminSeatUI(Scanner scanner) {
     this.s = scanner;
@@ -23,18 +24,35 @@ public class AdminSeatUI {
   public void startSeatFlow(Store store) {
     while (true) {
       clearConsole();
+      if (pendingBannerMessage != null) {
+        System.out.println(pendingBannerMessage);
+        System.out.println();
+        pendingBannerMessage = null;
+      }
       System.out.println(ConsoleStyle.divider());
       System.out.println(ConsoleStyle.title(store.getStoreName() + " 운영"));
       System.out.println(ConsoleStyle.divider());
-      System.out.print("수용 인원 입력 >> ");
+      System.out.print("수용 인원 입력 (6인 이상 단체석은 G 입력) >> ");
       String input = s.nextLine().trim();
 
+      if ("G".equalsIgnoreCase(input)) {
+        if (runSeatCycle(store, store.getMaxGroupSize(), true)) {
+          return;
+        }
+        continue;
+      }
+
       if (!ValidationUtil.isPositiveInteger(input)) {
-        System.out.println(ConsoleStyle.error("잘못된 입력입니다. 숫자를 입력해주세요."));
+        System.out.println(ConsoleStyle.error("잘못된 입력입니다. 1~5 숫자 또는 G를 입력해주세요."));
         continue;
       }
 
       int seatCount = Integer.parseInt(input);
+
+      if (seatCount > 5) {
+        System.out.println(ConsoleStyle.error("일반석 운영은 1~5만 입력할 수 있습니다. 6인 이상 단체석은 G를 입력해주세요."));
+        continue;
+      }
 
       if (seatCount > store.getMaxCapacity()) {
         System.out.println(
@@ -43,24 +61,24 @@ public class AdminSeatUI {
         continue;
       }
 
-      if (runSeatCycle(store, seatCount)) {
+      if (runSeatCycle(store, seatCount, false)) {
         return;
       }
     }
   }
 
   // 추천 -> 호출 -> 입장/노쇼 처리를 반복
-  private boolean runSeatCycle(Store store, int seatCount) {
+  private boolean runSeatCycle(Store store, int seatCount, boolean groupMode) {
     while (true) {
       List<Waiting> waitingList = waitingService.getWaitingByStoreId(store.getStoreId());
-      List<Waiting> recommendedList = recommendationService.recommend(waitingList, seatCount);
+      List<Waiting> recommendedList = recommendationService.recommend(waitingList, seatCount, groupMode);
 
       if (recommendedList.isEmpty()) {
         if (waitingList.isEmpty()) {
           return handleEmptyWaiting();
         }
 
-        return handleNoRecommendation(waitingList, seatCount);
+        return handleNoRecommendation(waitingList, seatCount, groupMode);
       }
 
       System.out.println();
@@ -131,20 +149,20 @@ public class AdminSeatUI {
       switch (input) {
         case "1":
           if (waitingService.enterWaiting(waiting.getWaitingId())) {
-            System.out.println();
-            System.out.println(ConsoleStyle.success("입장 처리가 완료되었습니다."));
-            System.out.println(ConsoleStyle.info("현재 좌석 상황에 맞게 수용 인원을 다시 입력해주세요."));
+            pendingBannerMessage = ConsoleStyle.success("입장 처리가 완료되었습니다.")
+                + System.lineSeparator()
+                + ConsoleStyle.info("현재 좌석 상황에 맞게 수용 인원을 다시 입력해주세요.");
           } else {
-            System.out.println(ConsoleStyle.error("입장 처리에 실패했습니다."));
+            pendingBannerMessage = ConsoleStyle.error("입장 처리에 실패했습니다.");
           }
           return true;
         case "2":
           if (waitingService.noshowWaiting(waiting.getWaitingId())) {
-            System.out.println();
-            System.out.println(ConsoleStyle.success("노쇼 처리가 완료되었습니다."));
-            System.out.println(ConsoleStyle.info("현재 좌석 상황에 맞게 수용 인원을 다시 입력해주세요."));
+            pendingBannerMessage = ConsoleStyle.success("노쇼 처리가 완료되었습니다.")
+                + System.lineSeparator()
+                + ConsoleStyle.info("현재 좌석 상황에 맞게 수용 인원을 다시 입력해주세요.");
           } else {
-            System.out.println(ConsoleStyle.error("노쇼 처리에 실패했습니다."));
+            pendingBannerMessage = ConsoleStyle.error("노쇼 처리에 실패했습니다.");
           }
           return true;
         default:
@@ -175,10 +193,14 @@ public class AdminSeatUI {
     }
   }
 
-  private boolean handleNoRecommendation(List<Waiting> waitingList, int seatCount) {
+  private boolean handleNoRecommendation(List<Waiting> waitingList, int seatCount, boolean groupMode) {
     while (true) {
       System.out.println();
-      System.out.println(ConsoleStyle.warning("수용 인원 " + seatCount + "명 이하의 추천 가능한 대기 손님이 없습니다."));
+      if (groupMode) {
+        System.out.println(ConsoleStyle.warning("6인 이상 단체석 추천 가능한 대기 손님이 없습니다."));
+      } else {
+        System.out.println(ConsoleStyle.warning("수용 인원 " + seatCount + "명 이하의 추천 가능한 대기 손님이 없습니다."));
+      }
       System.out.println();
       System.out.println(ConsoleStyle.title("현재 전체 대기 FIFO"));
       System.out.printf("%-6s %-8s%n", "대기번호", "인원수");

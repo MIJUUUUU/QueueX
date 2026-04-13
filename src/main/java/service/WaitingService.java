@@ -1,5 +1,6 @@
 package service;
 
+import common.DBUtil;
 import common.WaitingStatus;
 import dao.MenuDAO;
 import dao.OrderItemDAO;
@@ -9,6 +10,8 @@ import dto.Menu;
 import dto.Store;
 import dto.Waiting;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -74,13 +77,28 @@ public class WaitingService {
     // 대기 등록 + 선주문 항목 등록
     // selectedMenus: key=menuId, value=quantity
     public Waiting registerWaiting(int customerId, int storeId, int peopleCount, Map<Integer, Integer> selectedMenus) {
-        Waiting waiting = waitingDAO.register(customerId, storeId, peopleCount);
-        if (waiting == null) return null;
+        try (Connection conn = DBUtil.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                Waiting waiting = waitingDAO.register(conn, customerId, storeId, peopleCount);
 
-        for (Map.Entry<Integer, Integer> entry : selectedMenus.entrySet()) {
-            orderItemDAO.register(waiting.getWaitingId(), entry.getKey(), entry.getValue());
+                for (Map.Entry<Integer, Integer> entry : selectedMenus.entrySet()) {
+                    orderItemDAO.register(conn, waiting.getWaitingId(), entry.getKey(), entry.getValue());
+                }
+
+                conn.commit();
+                return waiting;
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+                return null;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return waiting;
+        return null;
     }
 
     // 고객의 현재 대기 목록 조회
@@ -94,6 +112,10 @@ public class WaitingService {
 
     public int getCurrentPosition(int storeId, int waitingNumber) {
         return waitingDAO.findCurrentPosition(storeId, waitingNumber);
+    }
+
+    public int getLanePosition(int storeId, int waitingNumber, int peopleCount) {
+        return waitingDAO.findLanePosition(storeId, waitingNumber, peopleCount >= 6);
     }
 
     // 대기 취소

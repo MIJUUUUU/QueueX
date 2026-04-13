@@ -1,6 +1,8 @@
 services:
   app:
     environment:
-      QUEUEX_DB_URL: jdbc:mysql://192.168.0.8:3308/queuex?serverTimezone=Asia/Seoul
+      QUEUEX_DB_URL: jdbc:mysql://192.168.0.16:3309/queuex?serverTimezone=Asia/Seoul
       QUEUEX_DB_USER: root
       QUEUEX_DB_PASSWORD: 11111111
+
+

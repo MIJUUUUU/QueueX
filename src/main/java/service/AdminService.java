@@ -43,4 +43,12 @@ public class AdminService {
 
     return adminDAO.getTodayStatisticsByStoreId(store.getStoreId());
   }
+
+  public AdminStatistics getOverallStatistics(Store store) {
+    if (store == null) {
+      return new AdminStatistics(0, 0, 0, Collections.emptyList());
+    }
+
+    return adminDAO.getOverallStatisticsByStoreId(store.getStoreId());
+  }
 }

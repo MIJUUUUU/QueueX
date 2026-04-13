@@ -9,6 +9,10 @@ import java.util.List;
 public class RecommendationService {
   // 수용 인원에 맞춰 추천 순위 계산
   public List<Waiting> recommend(List<Waiting> waitingList, int seatCount) {
+    return recommend(waitingList, seatCount, false);
+  }
+
+  public List<Waiting> recommend(List<Waiting> waitingList, int seatCount, boolean groupMode) {
     List<Waiting> regularRecommended = new ArrayList<>();
 
     for (Waiting waiting : waitingList) {
@@ -18,6 +22,16 @@ public class RecommendationService {
     }
 
     regularRecommended.sort(Comparator.comparing(Waiting::getWaitingNumber));
+
+    if (groupMode) {
+      List<Waiting> groupRecommended = new ArrayList<>();
+      for (Waiting waiting : regularRecommended) {
+        if (waiting.getPeopleCount() >= 6) {
+          groupRecommended.add(waiting);
+        }
+      }
+      return groupRecommended;
+    }
 
     if (seatCount < 6) {
       return regularRecommended;

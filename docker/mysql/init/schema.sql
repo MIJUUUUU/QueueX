@@ -46,6 +46,13 @@ CREATE TABLE IF NOT EXISTS waiting (
     FOREIGN KEY (store_id) REFERENCES store(store_id)
 );
 
+# 매장별 대기번호 시퀀스 테이블
+CREATE TABLE IF NOT EXISTS store_waiting_sequence (
+    store_id INT PRIMARY KEY,
+    last_waiting_number INT NOT NULL DEFAULT 0,
+    FOREIGN KEY (store_id) REFERENCES store(store_id)
+);
+
 # 선주문 테이블
 CREATE TABLE IF NOT EXISTS order_item (
     order_item_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -62,3 +69,4 @@ CREATE INDEX idx_waiting_customer_id ON waiting(customer_id);
 CREATE INDEX idx_waiting_store_id ON waiting(store_id);
 CREATE INDEX idx_waiting_status ON waiting(status);
 CREATE INDEX idx_order_item_waiting_id ON order_item(waiting_id);
+CREATE UNIQUE INDEX uq_waiting_store_number ON waiting(store_id, waiting_number);

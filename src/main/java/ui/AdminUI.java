@@ -16,13 +16,13 @@ public class AdminUI {
     this.adminMenuUI = new AdminMenuUI(scanner);
   }
 
-  public void adminStart() {
+  public String adminStart() {
     Admin admin = login();
 
     if (admin == null) {
-      return;
+      return null;
     }
-    adminMenuUI.showAdminMenu(admin);
+    return adminMenuUI.showAdminMenu(admin);
   }
 
   private Admin login() {

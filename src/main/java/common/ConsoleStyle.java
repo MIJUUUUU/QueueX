@@ -65,8 +65,9 @@ public final class ConsoleStyle {
             return 0;
         }
 
+        String plainText = text.replaceAll("\u001B\\[[;\\d]*m", "");
         int width = 0;
-        for (char ch : text.toCharArray()) {
+        for (char ch : plainText.toCharArray()) {
             width += isWideCharacter(ch) ? 2 : 1;
         }
         return width;

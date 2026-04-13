@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class CustomerUI {
+    private static final int WAITING_BOX_WIDTH = 50;
 
     private final CustomerService customerService = new CustomerService();
     private final Scanner scanner;
@@ -203,36 +204,19 @@ public class CustomerUI {
                 Store store = waitingService.getStoreById(w.getStoreId());
                 String storeName = store != null ? store.getStoreName() : "알 수 없음";
                 List<String> orderSummaries = waitingService.getOrderSummariesByWaitingId(w.getWaitingId());
-                int currentPosition = waitingService.getCurrentPosition(w.getStoreId(), w.getWaitingNumber());
+                int lanePosition = waitingService.getLanePosition(w.getStoreId(), w.getWaitingNumber(), w.getPeopleCount());
+                String laneLabel = w.getPeopleCount() >= 6 ? "단체 대기 순서" : "일반 대기 순서";
 
                 System.out.println();
                 System.out.println(ConsoleStyle.highlight("[" + storeName + "]"));
-                System.out.println("┌──────────────────────────────────────┐");
-                System.out.println("│ " + ConsoleStyle.padRight(
-                    "대기번호: " + w.getWaitingNumber() + "번",
-                    37
-                ) + "│");
-                System.out.println("│ " + ConsoleStyle.padRight(
-                    "순서: " + currentPosition + "번째",
-                    37
-                ) + "│");
-                System.out.println("│ " + ConsoleStyle.padRight(
-                    "인원수: " + w.getPeopleCount() + "명",
-                    37
-                ) + "│");
-                System.out.println("│ " + ConsoleStyle.padRight(
-                    "등록시각: " + formatDateTime(w.getCreatedAt()),
-                    37
-                ) + "│");
-                System.out.println("│ " + ConsoleStyle.padRight(
-                    "안내: " + stripAnsi(buildWaitingGuideMessage(w.getStatus(), currentPosition)),
-                    37
-                ) + "│");
-                System.out.println("│ " + ConsoleStyle.padRight(
-                    "주문: " + (orderSummaries.isEmpty() ? "없음" : String.join(", ", orderSummaries)),
-                    37
-                ) + "│");
-                System.out.println("└──────────────────────────────────────┘");
+                System.out.println(boxTop());
+                System.out.println(boxLine("대기번호: " + w.getWaitingNumber() + "번"));
+                System.out.println(boxLine(laneLabel + ": " + lanePosition + "번째"));
+                System.out.println(boxLine("인원수: " + w.getPeopleCount() + "명"));
+                System.out.println(boxLine("등록시각: " + formatDateTime(w.getCreatedAt())));
+                System.out.println(boxLine("안내: " + buildWaitingGuideMessage(w.getStatus(), lanePosition)));
+                System.out.println(boxLine("주문: " + (orderSummaries.isEmpty() ? "없음" : String.join(", ", orderSummaries))));
+                System.out.println(boxBottom());
             }
             System.out.println();
             System.out.println(ConsoleStyle.divider());
@@ -264,10 +248,6 @@ public class CustomerUI {
         return ConsoleStyle.warning("현재 상태를 확인해주세요.");
     }
 
-    private String stripAnsi(String text) {
-        return text.replaceAll("\u001B\\[[;\\d]*m", "");
-    }
-
     private String buildWaitingSnapshot(List<Waiting> waitingList) {
         if (waitingList.isEmpty()) {
             return "EMPTY";
@@ -275,7 +255,7 @@ public class CustomerUI {
 
         StringBuilder snapshot = new StringBuilder();
         for (Waiting w : waitingList) {
-            int currentPosition = waitingService.getCurrentPosition(w.getStoreId(), w.getWaitingNumber());
+            int currentPosition = waitingService.getLanePosition(w.getStoreId(), w.getWaitingNumber(), w.getPeopleCount());
             snapshot.append(w.getWaitingId()).append("|")
                 .append(w.getStatus()).append("|")
                 .append(currentPosition).append(";");
@@ -329,18 +309,19 @@ public class CustomerUI {
             Store store = waitingService.getStoreById(w.getStoreId());
             String storeName = store != null ? store.getStoreName() : "알 수 없음";
             List<String> orderSummaries = waitingService.getOrderSummariesByWaitingId(w.getWaitingId());
-            int currentPosition = waitingService.getCurrentPosition(w.getStoreId(), w.getWaitingNumber());
+            int currentPosition = waitingService.getLanePosition(w.getStoreId(), w.getWaitingNumber(), w.getPeopleCount());
+            String laneLabel = w.getPeopleCount() >= 6 ? "단체 대기 순서" : "일반 대기 순서";
 
             System.out.println();
             System.out.println(ConsoleStyle.highlight("[" + (i + 1) + "] " + storeName));
-            System.out.println("┌──────────────────────────────────────┐");
-            System.out.println("│ " + ConsoleStyle.padRight("대기번호: " + w.getWaitingNumber() + "번", 37) + "│");
-            System.out.println("│ " + ConsoleStyle.padRight("순서: " + currentPosition + "번째", 37) + "│");
-            System.out.println("│ " + ConsoleStyle.padRight("인원수: " + w.getPeopleCount() + "명", 37) + "│");
-            System.out.println("│ " + ConsoleStyle.padRight("등록시각: " + formatDateTime(w.getCreatedAt()), 37) + "│");
-            System.out.println("│ " + ConsoleStyle.padRight("안내: " + stripAnsi(buildWaitingGuideMessage(w.getStatus(), currentPosition)), 37) + "│");
-            System.out.println("│ " + ConsoleStyle.padRight("주문: " + (orderSummaries.isEmpty() ? "없음" : String.join(", ", orderSummaries)), 37) + "│");
-            System.out.println("└──────────────────────────────────────┘");
+            System.out.println(boxTop());
+            System.out.println(boxLine("대기번호: " + w.getWaitingNumber() + "번"));
+            System.out.println(boxLine(laneLabel + ": " + currentPosition + "번째"));
+            System.out.println(boxLine("인원수: " + w.getPeopleCount() + "명"));
+            System.out.println(boxLine("등록시각: " + formatDateTime(w.getCreatedAt())));
+            System.out.println(boxLine("안내: " + buildWaitingGuideMessage(w.getStatus(), currentPosition)));
+            System.out.println(boxLine("주문: " + (orderSummaries.isEmpty() ? "없음" : String.join(", ", orderSummaries))));
+            System.out.println(boxBottom());
         }
         System.out.println();
         System.out.println(ConsoleStyle.divider());
@@ -409,5 +390,17 @@ public class CustomerUI {
             return "-";
         }
         return dateTime.format(DATE_TIME_FORMATTER);
+    }
+
+    private String boxTop() {
+        return "┌" + "─".repeat(WAITING_BOX_WIDTH + 2) + "┐";
+    }
+
+    private String boxBottom() {
+        return "└" + "─".repeat(WAITING_BOX_WIDTH + 2) + "┘";
+    }
+
+    private String boxLine(String text) {
+        return "│ " + ConsoleStyle.padRight(text, WAITING_BOX_WIDTH) + " │";
     }
 }

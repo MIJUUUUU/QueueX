@@ -74,6 +74,15 @@ public class AdminDAO {
     return new AdminStatistics(totalVisitedCustomers, totalWaitingCount, noShowCount, menuStats);
   }
 
+  public AdminStatistics getOverallStatisticsByStoreId(int storeId) {
+    int totalVisitedCustomers = getOverallVisitedCustomers(storeId);
+    int totalWaitingCount = getOverallWaitingCount(storeId);
+    int noShowCount = getOverallNoShowCount(storeId);
+    List<MenuStat> menuStats = getOverallMenuStats(storeId);
+
+    return new AdminStatistics(totalVisitedCustomers, totalWaitingCount, noShowCount, menuStats);
+  }
+
   private int getTodayVisitedCustomers(int storeId) {
     String sql = """
         SELECT COALESCE(SUM(people_count), 0)
@@ -99,6 +108,36 @@ public class AdminDAO {
         SELECT COUNT(*)
         FROM waiting
         WHERE store_id = ? AND status = 'NOSHOW' AND DATE(created_at) = CURDATE()
+        """;
+
+    return getSingleCount(sql, storeId);
+  }
+
+  private int getOverallVisitedCustomers(int storeId) {
+    String sql = """
+        SELECT COALESCE(SUM(people_count), 0)
+        FROM waiting
+        WHERE store_id = ? AND status = 'ENTERED'
+        """;
+
+    return getSingleCount(sql, storeId);
+  }
+
+  private int getOverallWaitingCount(int storeId) {
+    String sql = """
+        SELECT COUNT(*)
+        FROM waiting
+        WHERE store_id = ?
+        """;
+
+    return getSingleCount(sql, storeId);
+  }
+
+  private int getOverallNoShowCount(int storeId) {
+    String sql = """
+        SELECT COUNT(*)
+        FROM waiting
+        WHERE store_id = ? AND status = 'NOSHOW'
         """;
 
     return getSingleCount(sql, storeId);
@@ -130,6 +169,44 @@ public class AdminDAO {
         LEFT JOIN waiting w
           ON w.store_id = ?
           AND DATE(w.created_at) = CURDATE()
+        LEFT JOIN order_item oi
+          ON oi.waiting_id = w.waiting_id
+          AND oi.menu_id = m.menu_id
+        WHERE m.store_id = ?
+        GROUP BY m.menu_id, m.menu_name
+        ORDER BY order_count DESC, m.menu_id ASC
+        """;
+
+    List<MenuStat> menuStats = new ArrayList<>();
+
+    try (
+        Connection conn = DBUtil.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)
+    ) {
+      pstmt.setInt(1, storeId);
+      pstmt.setInt(2, storeId);
+
+      try (ResultSet rs = pstmt.executeQuery()) {
+        while (rs.next()) {
+          menuStats.add(new MenuStat(
+              rs.getString("menu_name"),
+              rs.getInt("order_count")
+          ));
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return menuStats;
+  }
+
+  private List<MenuStat> getOverallMenuStats(int storeId) {
+    String sql = """
+        SELECT m.menu_name, COALESCE(SUM(oi.quantity), 0) AS order_count
+        FROM menu m
+        LEFT JOIN waiting w
+          ON w.store_id = ?
         LEFT JOIN order_item oi
           ON oi.waiting_id = w.waiting_id
           AND oi.menu_id = m.menu_id

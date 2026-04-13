@@ -13,18 +13,22 @@ public class OrderItemDAO {
 
     // 선주문 항목 등록
     public void register(int waitingId, int menuId, int quantity) {
+        try (Connection conn = DBUtil.getConnection()) {
+            register(conn, waitingId, menuId, quantity);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void register(Connection conn, int waitingId, int menuId, int quantity) throws SQLException {
         String sql = "INSERT INTO order_item (waiting_id, menu_id, quantity) VALUES (?, ?, ?)";
 
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, waitingId);
             pstmt.setInt(2, menuId);
             pstmt.setInt(3, quantity);
             pstmt.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
